@@ -23,6 +23,7 @@ file(GLOB_RECURSE HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/datatype/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/util/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Proofs/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/blockchain/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
 )
 
