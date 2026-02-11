@@ -1,15 +1,14 @@
 #ifndef POC_H
 #define POC_H
 
-#include <datatype/uint256_t.h>
 #include <stdint.h>
-#include <string.h>
-#include <openssl/sha.h>
-
+#include "datatype/uint256_t.h"
+#include "util/utilities.h"
 
 #if !defined(__linux__)
 #error "This implementation is Linux optimized only"
 #endif
+
 #define MINI_POW_INLINE static inline __attribute__((always_inline))
 
 /*
@@ -27,22 +26,18 @@ typedef struct __attribute__((aligned(32))) {
 
 /*
  * generate_Challenge:
- *  - Computes SHA256 hash over serialized block data
+ *  - Computes SHA256 hash over the block struct
+ *  - Uses HASH256_OF from utilities.h (zero-copy)
  *  - Returns mini_pow_t with challenge and specified complexity
- *  - 'block' should point to the block struct (cast appropriately)
  */
 MINI_POW_INLINE mini_pow_t generate_Challenge(const void* block, size_t block_size, uint8_t complexity)
 {
     mini_pow_t pow;
-    uint8_t buf[block_size];
 
-    // Copy block into buffer for hashing (deterministic)
-    memcpy(buf, block, block_size);
+    // Zero-copy deterministic hash
+    hash256_buffer(block, block_size, &pow.challenge);
 
-    // Compute SHA256
-    SHA256(buf, block_size, (unsigned char*)pow.challenge.w);
-
-    // Set complexity
+    // Set PoW complexity
     pow.complexity = complexity;
 
     return pow;
