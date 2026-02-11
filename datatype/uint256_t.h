@@ -85,4 +85,26 @@ U256_INLINE void uint256_copy(uint256 *dst,
     memcpy(dst, src, sizeof(uint256));
 }
 
+
+U256_INLINE void uint256_serialize(const uint256 *u, uint8_t *buf)
+{
+    for (int i = 0; i < 4; ++i)
+    {
+        uint64_t w_be = htobe64(u->w[i]); // convert to big-endian
+        memcpy(buf + i*8, &w_be, 8);
+    }
+}
+
+U256_INLINE void uint256_deserialize(uint256 *u, const uint8_t *buf)
+{
+    for (int i = 0; i < 4; ++i)
+    {
+        uint64_t w_be;
+        memcpy(&w_be, buf + i*8, 8);
+        u->w[i] = be64toh(w_be); // convert back to host endianness
+    }
+}
+
+
+
 #endif

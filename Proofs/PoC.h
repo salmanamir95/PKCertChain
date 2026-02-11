@@ -1,15 +1,47 @@
 #ifndef POC_H
 #define POC_H
+
 #include <datatype/uint256_t.h>
-#define POW_INLINE static inline __attribute__((always_inline))
+#include <stdint.h>
+#include <string.h>
+#include <openssl/sha.h>
 
+#define MINI_POW_INLINE static inline __attribute__((always_inline))
+
+/*
+ * mini_pow_t:
+ *  - 32-byte aligned
+ *  - deterministic 256-bit challenge
+ *  - complexity 0-255 bits
+ *  - optional padding for cache alignment
+ */
 typedef struct __attribute__((aligned(32))) {
-    uint256 challenge;   // 256-bit challenge
-    uint8_t complexity;  // 0-255 bits
-} pow_t;
+    uint256 challenge;   // 32 bytes
+    uint8_t complexity;  // 1 byte
+    uint8_t reserved[7]; // padding to make 32-byte multiple
+} mini_pow_t;
 
-POW_INLINE pow_t generate_Challenge(void* block){
+/*
+ * generate_Challenge:
+ *  - Computes SHA256 hash over serialized block data
+ *  - Returns mini_pow_t with challenge and specified complexity
+ *  - 'block' should point to the block struct (cast appropriately)
+ */
+MINI_POW_INLINE mini_pow_t generate_Challenge(const void* block, size_t block_size, uint8_t complexity)
+{
+    mini_pow_t pow;
+    uint8_t buf[block_size];
 
+    // Copy block into buffer for hashing (deterministic)
+    memcpy(buf, block, block_size);
+
+    // Compute SHA256
+    SHA256(buf, block_size, (unsigned char*)pow.challenge.w);
+
+    // Set complexity
+    pow.complexity = complexity;
+
+    return pow;
 }
 
-#endif //POC_H
+#endif // POC_H
