@@ -4,6 +4,12 @@
 #include <stdint.h>
 #include "datatype/uint256_t.h"
 
+
+#if !defined(__linux__)
+#error "This implementation is Linux optimized only"
+#endif
+
+
 #define CERT_INLINE static inline __attribute__((always_inline))
 
 /*

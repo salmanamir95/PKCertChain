@@ -5,6 +5,11 @@
 #include "datatype/uint256_t.h"
 #include "blockchain/certificate.h"
 
+#if !defined(__linux__)
+#error "This implementation is Linux optimized only"
+#endif
+
+
 #define BLOCK_INLINE static inline __attribute__((always_inline))
 
 /*

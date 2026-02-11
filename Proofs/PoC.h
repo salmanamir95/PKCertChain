@@ -6,6 +6,10 @@
 #include <string.h>
 #include <openssl/sha.h>
 
+
+#if !defined(__linux__)
+#error "This implementation is Linux optimized only"
+#endif
 #define MINI_POW_INLINE static inline __attribute__((always_inline))
 
 /*
