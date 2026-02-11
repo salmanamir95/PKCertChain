@@ -26,4 +26,43 @@ typedef struct __attribute__((aligned(32))) {
     uint8_t  reserved[95]; // padding to make struct 128 bytes
 } certificate;
 
+CERT_INLINE void cert_init(certificate * cert){
+    uint256_zero(&cert->pubEncKey);
+    uint256_zero(&cert->pubSignKey);
+    cert->id = 0;
+    memset(cert->reserved, 0, sizeof(cert->reserved));
+}
+
+CERT_INLINE const uint256* cert_get_pubSignKey_ptr(const certificate *cert) {
+    return &cert->pubSignKey;
+}
+
+
+CERT_INLINE const uint256* cert_get_pubEncKey(const certificate * cert){
+    return &cert->pubEncKey;
+}
+
+CERT_INLINE uint8_t cert_get_id(const certificate * cert){
+    return cert->id;
+}
+
+CERT_INLINE void cert_set_pubSignKey(certificate * cert, const uint256 * key){
+    cert->pubSignKey = *key;
+}
+
+CERT_INLINE void cert_set_pubEncKey(certificate * cert, const uint256 * key){
+    cert->pubEncKey = *key;
+}
+
+CERT_INLINE void cert_set_id(certificate * cert, uint8_t id){
+    cert->id = id;
+}
+
+CERT_INLINE void cert_copy(certificate * dst, const certificate * src){
+    uint256_copy(&dst->pubSignKey, &src->pubSignKey);
+    uint256_copy(&dst->pubEncKey, &src->pubEncKey);
+    dst->id = src->id;
+    memset(dst->reserved, 0, sizeof(dst->reserved));
+}
+
 #endif // CERTIFICATE_H

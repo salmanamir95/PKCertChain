@@ -24,6 +24,35 @@ typedef struct __attribute__((aligned(32))) {
     uint8_t reserved[7]; // padding to make 32-byte multiple
 } mini_pow_t;
 
+
+MINI_POW_INLINE void mini_pow_init(mini_pow_t * pow){
+    uint256_zero(&pow->challenge);
+    pow->complexity = 0;
+    memset(pow->reserved, 0, sizeof(pow->reserved));
+}
+
+MINI_POW_INLINE const uint256* mini_pow_get_challenge_ptr(const mini_pow_t * pow){
+    return &pow->challenge;
+}
+
+MINI_POW_INLINE uint8_t mini_pow_get_complexity(const mini_pow_t * pow){
+    return pow->complexity;
+}
+
+MINI_POW_INLINE void mini_pow_set_challenge(mini_pow_t * pow, const uint256 * challenge){
+    uint256_copy(&pow->challenge, challenge);
+}
+
+MINI_POW_INLINE void mini_pow_set_complexity(mini_pow_t * pow, uint8_t complexity){
+    pow->complexity = complexity;
+}
+
+MINI_POW_INLINE void mini_pow_copy(mini_pow_t * dst, const mini_pow_t * src){
+    uint256_copy(&dst->challenge, &src->challenge);
+    dst->complexity = src->complexity;
+    memset(dst->reserved, 0, sizeof(dst->reserved));
+}
+
 /*
  * generate_Challenge:
  *  - Computes SHA256 hash over the block struct
