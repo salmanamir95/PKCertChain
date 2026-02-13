@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "datatype/uint256_t.h"
+#include "datatype/OpStatus.h"
 
 
 #if !defined(__linux__)
@@ -23,7 +24,7 @@ typedef struct __attribute__((aligned(32))) {
     uint256 pubSignKey;    // 32 bytes
     uint256 pubEncKey;     // 32 bytes
     uint8_t  id;           // 1 byte node id
-    uint8_t  reserved[95]; // padding to make struct 128 bytes
+    uint8_t  reserved[31]; // padding
 } certificate;
 
 CERT_INLINE void cert_init(certificate * cert){
@@ -64,5 +65,41 @@ CERT_INLINE void cert_copy(certificate * dst, const certificate * src){
     dst->id = src->id;
     memset(dst->reserved, 0, sizeof(dst->reserved));
 }
+
+#define CERT_SIZE 65
+
+CERT_INLINE OpStatus_t cert_serialize(certificate *cert, uint8_t* buf, size_t buf_len) {
+    if (!cert || !buf) return OP_NULL_PTR;             // null pointer check
+    if (buf_len < CERT_SIZE) return OP_BUF_TOO_SMALL;  // buffer too small
+
+    OpStatus_t status =  uint256_serialize(&cert->pubSignKey, buf, sizeof(buf));        // bytes 0..31
+    if (status != OP_SUCCESS) return status;
+
+    status = uint256_serialize(&cert->pubEncKey, buf + 32, sizeof(buf));    // bytes 32..63
+    if (status != OP_SUCCESS) return status;
+
+    buf[64] = cert->id;                               // byte 64
+
+    return OP_SUCCESS;
+}
+
+
+
+CERT_INLINE OpStatus_t cert_deserialize(certificate *cert, const uint8_t* buf, size_t buf_len) {
+    if (!cert || !buf) return OP_NULL_PTR;             // null pointer check
+    if (buf_len < CERT_SIZE) return OP_BUF_TOO_SMALL;  // buffer too small
+
+    OpStatus_t status = uint256_deserialize(&cert->pubSignKey, buf, 32);  // bytes 0..31
+    if (status != OP_SUCCESS) return status;
+
+    status = uint256_deserialize(&cert->pubEncKey, buf + 32, 32);         // bytes 32..63
+    if (status != OP_SUCCESS) return status;
+
+    cert->id = buf[64];  // restore id
+
+    return OP_SUCCESS;
+}
+
+
 
 #endif // CERTIFICATE_H

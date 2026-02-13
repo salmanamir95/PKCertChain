@@ -2,6 +2,9 @@
 #define BLOCK_H
 
 #include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+#include <endian.h> // htobe64
 #include "datatype/uint256_t.h"
 #include "blockchain/certificate.h"
 
@@ -20,10 +23,10 @@
  */
 
 typedef struct __attribute__((aligned(32))) {
-    certificate cert;     // 64 bytes: pubSignKey + pubEncKey + id
+    certificate cert;     // 96 bytes: pubSignKey + pubEncKey + id
     uint64_t timestamp;   // monotonic time, canonical 64-bit
     uint8_t  index;       // block index (small network)
-    uint8_t  reserved[7]; // padding to maintain 32-byte alignment
+    uint8_t  reserved[23]; // padding to maintain 32-byte alignment
 } block;
 
 BLOCK_INLINE void block_init(block * blk){
@@ -63,6 +66,45 @@ BLOCK_INLINE void block_copy(block * dst, const block * src){
     dst->index = src->index;
     memset(dst->reserved, 0, sizeof(dst->reserved));
 }
+
+#define BLOCK_SIZE 105
+
+BLOCK_INLINE OpStatus_t block_serialize(block *blk, uint8_t* buf, size_t buf_len) {
+    if (!blk || !buf) return OP_NULL_PTR;
+    if (buf_len < BLOCK_SIZE) return OP_BUF_TOO_SMALL;
+
+    // serialize certificate
+    OpStatus_t status = cert_serialize(&blk->cert, buf, CERT_SIZE);
+    if (status != OP_SUCCESS) return status;
+
+    // serialize timestamp (big-endian)
+    uint64_t ts_be = htobe64(blk->timestamp);
+    memcpy(buf + CERT_SIZE, &ts_be, sizeof(ts_be)); // bytes 65..72
+
+    buf[64] = blk->index; // byte 64
+
+
+    return OP_SUCCESS;
+}
+
+BLOCK_INLINE OpStatus_t block_deserialize(block *blk, const uint8_t* buf, size_t buf_len) {
+    if (!blk || !buf) return OP_NULL_PTR;
+    if (buf_len < BLOCK_SIZE) return OP_BUF_TOO_SMALL;
+
+    // deserialize
+    OpStatus_t status = cert_deserialize(&blk->cert, buf, CERT_SIZE);
+    if (status != OP_SUCCESS) return status;
+
+    // deserialize timestamp
+    memcpy(&blk->timestamp, buf + CERT_SIZE, sizeof(blk->timestamp));
+    blk->timestamp = be64toh(blk->timestamp);
+
+    blk->index = buf[64];
+
+    return OP_SUCCESS;
+}
+
+
 
 
 #endif // BLOCK_H

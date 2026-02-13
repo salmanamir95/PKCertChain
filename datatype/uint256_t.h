@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-
+#include "datatype/OpStatus.h"
 #if !defined(__linux__)
 #error "This implementation is Linux optimized only"
 #endif
@@ -86,25 +86,38 @@ U256_INLINE void uint256_copy(uint256 *dst,
 }
 
 
-U256_INLINE void uint256_serialize(const uint256 *u, uint8_t *buf)
+#define UINT256_SIZE 32  // 4 * 8 bytes
+
+U256_INLINE OpStatus_t uint256_serialize(const uint256 *u, uint8_t *buf, size_t buf_len)
 {
+    if (!u || !buf) return OP_NULL_PTR;          // null pointer check
+    if (buf_len < UINT256_SIZE) return OP_BUF_TOO_SMALL; // buffer too small
+
     for (int i = 0; i < 4; ++i)
     {
-        uint64_t w_be = htobe64(u->w[i]); // convert to big-endian
+        uint64_t w_be = htobe64(u->w[i]);       // convert to big-endian
         memcpy(buf + i*8, &w_be, 8);
     }
+
+    return OP_SUCCESS;
 }
 
-U256_INLINE void uint256_deserialize(uint256 *u, const uint8_t *buf)
+
+
+U256_INLINE OpStatus_t uint256_deserialize(uint256 *u, const uint8_t *buf, size_t buf_len)
 {
+    if (!u || !buf) return OP_NULL_PTR;            // null pointer check
+    if (buf_len < UINT256_SIZE) return OP_BUF_TOO_SMALL; // buffer too small
+
     for (int i = 0; i < 4; ++i)
     {
         uint64_t w_be;
         memcpy(&w_be, buf + i*8, 8);
-        u->w[i] = be64toh(w_be); // convert back to host endianness
+        u->w[i] = be64toh(w_be);                  // convert back to host endianness
     }
-}
 
+    return OP_SUCCESS;
+}
 
 
 #endif

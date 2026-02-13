@@ -9,7 +9,7 @@
 #error "This implementation is Linux optimized only"
 #endif
 
-#define MINI_POW_INLINE static inline __attribute__((always_inline))
+#define MINI_POW_CHALLENGE_INLINE static inline __attribute__((always_inline))
 
 /*
  * mini_pow_challenge_t:
@@ -21,33 +21,34 @@
 typedef struct __attribute__((aligned(32))) {
     uint256 challenge;   // 32 bytes
     uint8_t complexity;  // 1 byte
+    uint8_t challenge_id; // 1 byte
     uint8_t reserved[7]; // padding to make 32-byte multiple
 } mini_pow_challenge_t;
 
 
-MINI_POW_INLINE void mini_pow_challenge_init(mini_pow_challenge_t * pow){
+MINI_POW_CHALLENGE_INLINE void mini_pow_challenge_init(mini_pow_challenge_t * pow){
     uint256_zero(&pow->challenge);
     pow->complexity = 0;
     memset(pow->reserved, 0, sizeof(pow->reserved));
 }
 
-MINI_POW_INLINE const uint256* mini_pow_challenge_get_challenge_ptr(const mini_pow_challenge_t * pow){
+MINI_POW_CHALLENGE_INLINE const uint256* mini_pow_challenge_get_challenge_ptr(const mini_pow_challenge_t * pow){
     return &pow->challenge;
 }
 
-MINI_POW_INLINE uint8_t mini_pow_challenge_get_complexity(const mini_pow_challenge_t * pow){
+MINI_POW_CHALLENGE_INLINE uint8_t mini_pow_challenge_get_complexity(const mini_pow_challenge_t * pow){
     return pow->complexity;
 }
 
-MINI_POW_INLINE void mini_pow_challenge_set_challenge(mini_pow_challenge_t * pow, const uint256 * challenge){
+MINI_POW_CHALLENGE_INLINE void mini_pow_challenge_set_challenge(mini_pow_challenge_t * pow, const uint256 * challenge){
     uint256_copy(&pow->challenge, challenge);
 }
 
-MINI_POW_INLINE void mini_pow_challenge_set_complexity(mini_pow_challenge_t * pow, uint8_t complexity){
+MINI_POW_CHALLENGE_INLINE void mini_pow_challenge_set_complexity(mini_pow_challenge_t * pow, uint8_t complexity){
     pow->complexity = complexity;
 }
 
-MINI_POW_INLINE void mini_pow_challenge_copy(mini_pow_challenge_t * dst, const mini_pow_challenge_t * src){
+MINI_POW_CHALLENGE_INLINE void mini_pow_challenge_copy(mini_pow_challenge_t * dst, const mini_pow_challenge_t * src){
     uint256_copy(&dst->challenge, &src->challenge);
     dst->complexity = src->complexity;
     memset(dst->reserved, 0, sizeof(dst->reserved));
@@ -59,7 +60,7 @@ MINI_POW_INLINE void mini_pow_challenge_copy(mini_pow_challenge_t * dst, const m
  *  - Uses HASH256_OF from utilities.h (zero-copy)
  *  - Returns mini_pow_challenge_t with challenge and specified complexity
  */
-MINI_POW_INLINE mini_pow_challenge_t generate_mini_pow_Challenge(const void* block, size_t block_size, uint8_t complexity)
+MINI_POW_CHALLENGE_INLINE mini_pow_challenge_t generate_mini_pow_Challenge(const void* block, size_t block_size, uint8_t complexity)
 {
     mini_pow_challenge_t pow;
 
