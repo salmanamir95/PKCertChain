@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "datatype/uint256_t.h"
 #include "datatype/OpStatus.h"
-
+#include "util/Size_Offsets.h"
 
 #if !defined(__linux__)
 #error "This implementation is Linux optimized only"
@@ -43,7 +43,7 @@ CERT_INLINE const uint256* cert_get_pubEncKey(const certificate * cert){
     return &cert->pubEncKey;
 }
 
-CERT_INLINE uint8_t cert_get_id(const certificate * cert){
+CERT_INLINE const uint8_t cert_get_id(const certificate * cert){
     return cert->id;
 }
 
@@ -66,19 +66,18 @@ CERT_INLINE void cert_copy(certificate * dst, const certificate * src){
     memset(dst->reserved, 0, sizeof(dst->reserved));
 }
 
-#define CERT_SIZE 65
 
 CERT_INLINE OpStatus_t cert_serialize(certificate *cert, uint8_t* buf, size_t buf_len) {
     if (!cert || !buf) return OP_NULL_PTR;             // null pointer check
     if (buf_len < CERT_SIZE) return OP_BUF_TOO_SMALL;  // buffer too small
 
-    OpStatus_t status =  uint256_serialize(&cert->pubSignKey, buf, sizeof(buf));        // bytes 0..31
+    OpStatus_t status =  uint256_serialize(&cert->pubSignKey, buf, UINT256_SIZE);        // bytes 0..31
     if (status != OP_SUCCESS) return status;
 
-    status = uint256_serialize(&cert->pubEncKey, buf + 32, sizeof(buf));    // bytes 32..63
+    status = uint256_serialize(&cert->pubEncKey, buf + UINT256_SIZE, UINT256_SIZE);    // bytes 32..63
     if (status != OP_SUCCESS) return status;
 
-    buf[64] = cert->id;                               // byte 64
+    buf[CERT_SIZE - 1] = cert->id;                               // byte 64
 
     return OP_SUCCESS;
 }
@@ -89,13 +88,13 @@ CERT_INLINE OpStatus_t cert_deserialize(certificate *cert, const uint8_t* buf, s
     if (!cert || !buf) return OP_NULL_PTR;             // null pointer check
     if (buf_len < CERT_SIZE) return OP_BUF_TOO_SMALL;  // buffer too small
 
-    OpStatus_t status = uint256_deserialize(&cert->pubSignKey, buf, 32);  // bytes 0..31
+    OpStatus_t status = uint256_deserialize(&cert->pubSignKey, buf, UINT256_SIZE);  // bytes 0..31
     if (status != OP_SUCCESS) return status;
 
-    status = uint256_deserialize(&cert->pubEncKey, buf + 32, 32);         // bytes 32..63
+    status = uint256_deserialize(&cert->pubEncKey, buf + UINT256_SIZE, UINT256_SIZE);         // bytes 32..63
     if (status != OP_SUCCESS) return status;
 
-    cert->id = buf[64];  // restore id
+    cert->id = buf[CERT_SIZE-1];  // restore id
 
     return OP_SUCCESS;
 }
