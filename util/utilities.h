@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdbool.h>
 #include <openssl/sha.h>
 
 #include "datatype/uint256_t.h"
@@ -29,6 +30,25 @@ UTIL_INLINE void hash256_buffer(const uint8_t *buf, size_t len, uint256 *out)
 {
     if (!buf || !out) return;               // optional safety check
     SHA256(buf, len, (unsigned char *)out->w);
+}
+
+
+UTIL_INLINE uint16_t clz256(const uint256 *hash)
+{
+    uint32_t count = 0;
+
+    for (int i = 0; i < 4; i++) {
+        uint64_t w = hash->w[i];
+
+        if (w == 0) {
+            count += 64;
+        } else {
+            count += __builtin_clzll(w);
+            break;
+        }
+    }
+
+    return count;
 }
 
 
