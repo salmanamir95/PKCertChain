@@ -72,7 +72,7 @@ MINI_POW_CHALLENGE_INLINE void mini_pow_challenge_copy(mini_pow_challenge_t * ds
  */
 MINI_POW_CHALLENGE_INLINE OpStatus_t generate_mini_pow_Challenge(block* block, uint8_t complexity, mini_pow_challenge_t* pow)
 {
-    uint8_t* buf = new uint8_t [BLOCK_SIZE];
+    uint8_t buf[BLOCK_SIZE];
 
     OpStatus_t status = block_serialize(block, buf, BLOCK_SIZE);
     if (status != OP_SUCCESS) return status;
@@ -96,7 +96,7 @@ MINI_POW_CHALLENGE_H OpStatus_t mini_pow_challenge_serialize(mini_pow_challenge_
     if (!pow || !buf) return OP_NULL_PTR;
     if (buf_len < MINI_POW_CHALLENGE_SIZE) return OP_BUF_TOO_SMALL;
 
-    OpStatus_t status = uint256_serialize(&pow->challenge, buf, sizeof(buf));
+    OpStatus_t status = uint256_serialize(&pow->challenge, buf, UINT256_SIZE);
     if (status != OP_SUCCESS) return status;
 
     buf[32] = pow->complexity;
@@ -111,7 +111,7 @@ MINI_POW_CHALLENGE_H OpStatus_t mini_pow_challenge_deserialize(mini_pow_challeng
     if (!pow || !buf) return OP_NULL_PTR;
     if (buf_len < MINI_POW_CHALLENGE_SIZE) return OP_BUF_TOO_SMALL;
 
-    OpStatus_t status = uint256_deserialize(&pow->challenge, buf, sizeof(buf));
+    OpStatus_t status = uint256_deserialize(&pow->challenge, buf, UINT256_SIZE);
     if (status != OP_SUCCESS) return status;
     pow->complexity = buf[32];
     pow->challenge_id = buf[33];

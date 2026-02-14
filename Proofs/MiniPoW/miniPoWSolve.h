@@ -46,7 +46,7 @@ MINI_POW_SOLVE_INLINE uint8_t mini_pow_solve_get_challenge_id(mini_pow_solve_t *
     return pow->challenge_id;
 }
 
-MINI_POW_SOLVE_INLINE void mini_pow_solve_set_nonce(mini_pow_solve_t *pow, uint8_t nonce)
+MINI_POW_SOLVE_INLINE void mini_pow_solve_set_nonce(mini_pow_solve_t *pow, uint64_t nonce)
 {
     pow->nonce = nonce;
 }
@@ -63,11 +63,13 @@ MINI_POW_SOLVE_INLINE OpStatus_t mini_pow_solve_serialize(mini_pow_solve_t *pow,
 {
     if (!pow || !buf)
         return OP_NULL_PTR;
-    if (sizeof(buf) < MINI_POW_SOLVE_SIZE || len < MINI_POW_SOLVE_SIZE)
+    if (len < MINI_POW_SOLVE_SIZE)
         return OP_BUF_TOO_SMALL;
 
-    memset(buf, htobe64(pow->complexity), sizeof(pow->complexity));
+    OpStatus_t status = uint64_t_serialize(pow->nonce, buf, UINT64_SIZE);
+    if (status != OP_SUCCESS) return status;
     buf[8] = pow->complexity;
+    buf[9] = pow->challenge_id;
     return OP_SUCCESS;
 }
 
@@ -75,16 +77,17 @@ MINI_POW_SOLVE_INLINE OpStatus_t mini_pow_solve_deserialize(mini_pow_solve_t *po
 {
     if (!pow || !buf)
         return OP_NULL_PTR;
-    if (sizeof(buf) < MINI_POW_SOLVE_SIZE || len < MINI_POW_SOLVE_SIZE)
+    if (len < MINI_POW_SOLVE_SIZE)
         return OP_BUF_TOO_SMALL;
 
     memcpy(&pow->nonce, buf, 8);
     pow->nonce = be64toh(pow->nonce);
     pow->complexity = buf[8];
+    pow->challenge_id = buf[9];
     return OP_SUCCESS;
 }
 //exactly check the first n bits exactly zero and no more should be zero
-bool check_complexity_met(uint256 *hash, uint8_t complexity)
+MINI_POW_SOLVE_INLINE bool check_complexity_met(uint256 *hash, uint8_t complexity)
 {
     if (complexity > 255) return false;  // maximum valid complexity
 
@@ -96,47 +99,41 @@ bool check_complexity_met(uint256 *hash, uint8_t complexity)
 
 
 
-MINI_POW_SOLVE_INLINE void mini_pow_solve_solve_challenge(mini_pow_challenge_t *pow, mini_pow_solve_t*& solved)
+MINI_POW_SOLVE_INLINE void mini_pow_solve_solve_challenge(mini_pow_challenge_t *pow, mini_pow_solve_t **solved)
 {
     bool found = false;
     uint8_t comp = mini_pow_challenge_get_complexity(pow);
     const uint256 *challenge = mini_pow_challenge_get_challenge(pow);
-    uint256 *hash = new uint256();
+    uint256 hash;
     uint64_t i_serialize;
-    uint8_t *buf = new uint8_t[UINT64_SIZE];
-    uint8_t *buf256 = new uint8_t[UINT256_SIZE];
-    uint8_t *buf512 = new uint8_t[UINT512_SIZE];
-    uint512 *concat = new uint512();
+    uint8_t buf[UINT64_SIZE];
+    uint8_t buf512[UINT512_SIZE];
+    uint512 concat;
     OpStatus_t status;
     for (uint64_t i = 0; i <= UINT64_MAX && !found; i++)
     {
         status = uint64_t_serialize(i, buf, UINT64_SIZE);
         if (status != OP_SUCCESS)
             continue;
-        hash256_buffer(buf, UINT64_SIZE, hash);
-        uint512_from_two_uint256(concat, &pow->challenge, hash);
-        status = uint512_serialize(concat, buf512, UINT512_SIZE);
+        hash256_buffer(buf, UINT64_SIZE, &hash);
+        uint512_from_two_uint256(&concat, &pow->challenge, &hash);
+        status = uint512_serialize(&concat, buf512, UINT512_SIZE);
         if (status != OP_SUCCESS) continue;
-        hash256_buffer(buf512,UINT512_SIZE,hash);
-        if (check_complexity_met(hash, pow->complexity))
+        hash256_buffer(buf512, UINT512_SIZE, &hash);
+        if (check_complexity_met(&hash, pow->complexity))
             found = true;
     }
 
     if(!found)
-        solved = nullptr;
+        *solved = NULL;
     else
     {
-        mini_pow_solve_set_challenge_id(solved, pow->challenge_id);
-        mini_pow_solve_set_complexity(solved,pow->complexity);
+        mini_pow_solve_set_challenge_id(*solved, pow->challenge_id);
+        mini_pow_solve_set_complexity(*solved, pow->complexity);
         uint64_t nonce;
-        status = uint64_t_deserialize(&nonce, buf, UINT64_MAX);
-        mini_pow_solve_set_nonce(solved, nonce);
+        status = uint64_t_deserialize(&nonce, buf, UINT64_SIZE);
+        mini_pow_solve_set_nonce(*solved, nonce);
     }
-    delete [] buf256;
-    delete[] buf512;
-    delete[] hash;
-    delete[] buf;
-    delete[] concat;
 
 }
 #endif // MINI_POW_SOLVE_H
