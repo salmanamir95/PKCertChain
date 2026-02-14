@@ -12,6 +12,7 @@ file(GLOB_RECURSE SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/datatype/*.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/util/*.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/Proofs/*.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/telemetry/*.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/*.c"
 )
 
@@ -23,6 +24,7 @@ file(GLOB_RECURSE HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/datatype/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/util/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Proofs/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/telemetry/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/blockchain/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
 )
