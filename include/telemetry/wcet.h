@@ -1,7 +1,7 @@
 #ifndef WCET_H
 #define WCET_H
 
-#include "telemetry_core.h"
+#include "telemetry/telemetry_core.h"
 #include <time.h>
 
 // Internal structure to hold scope state

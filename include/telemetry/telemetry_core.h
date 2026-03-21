@@ -1,7 +1,7 @@
 #ifndef TELEMETRY_CORE_H
 #define TELEMETRY_CORE_H
 
-#include "telemetry_common.h"
+#include "telemetry/telemetry_common.h"
 
 // Initialize the subsystem
 void telemetry_init(void);

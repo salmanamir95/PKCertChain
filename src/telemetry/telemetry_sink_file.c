@@ -1,4 +1,4 @@
-#include "telemetry_core.h"
+#include "telemetry/telemetry_core.h"
 #include <stdio.h>
 
 static FILE* log_file = NULL;

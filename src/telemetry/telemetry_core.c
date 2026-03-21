@@ -1,5 +1,5 @@
 #define _POSIX_C_SOURCE 199309L // For clock_gettime
-#include "telemetry_core.h"
+#include "telemetry/telemetry_core.h"
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
