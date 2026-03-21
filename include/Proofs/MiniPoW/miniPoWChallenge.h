@@ -89,8 +89,6 @@ MINI_POW_CHALLENGE_INLINE OpStatus_t generate_mini_pow_Challenge(block* block, u
     return OP_SUCCESS;
 }
 
-#define MINI_POW_CHALLENGE_SIZE 34
-
 MINI_POW_CHALLENGE_INLINE OpStatus_t mini_pow_challenge_serialize(mini_pow_challenge_t *pow, uint8_t* buf, size_t buf_len)
 {
     if (!pow || !buf) return OP_NULL_PTR;

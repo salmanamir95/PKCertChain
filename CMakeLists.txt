@@ -4,6 +4,7 @@ project(pkcertchain C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -march=native -Wall -Wextra")
+add_compile_definitions(_DEFAULT_SOURCE)
 
 find_package(OpenSSL REQUIRED)
 

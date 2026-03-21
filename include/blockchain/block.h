@@ -93,6 +93,8 @@ BLOCK_INLINE OpStatus_t block_serialize(block *blk, uint8_t *buf, size_t buf_len
     if (buf_len < BLOCK_SIZE)
         return OP_BUF_TOO_SMALL;
 
+    memset(buf, 0, buf_len);
+
     // serialize certificate
     OpStatus_t status = cert_serialize(&blk->cert, buf, CERT_SIZE);
     if (status != OP_SUCCESS)

@@ -43,7 +43,7 @@ static void test_clz256(void) {
 
     uint256_zero(&v);
     v.w[3] = 0x0000000000000001ULL;
-    assert(clz256(&v) == 191);
+    assert(clz256(&v) == 255);
 }
 
 int main(void) {

@@ -13,7 +13,7 @@ for test_file in "$TEST_DIR"/*.c; do
   out_bin="$OUT_DIR/$test_name"
 
   echo "Compiling $test_name..."
-  if cc -std=c11 -I"$ROOT_DIR/include" "$test_file" -o "$out_bin" -lcrypto; then
+  if cc -std=c11 -D_DEFAULT_SOURCE -I"$ROOT_DIR/include" "$test_file" -o "$out_bin" -lcrypto; then
     echo "OK: $test_name"
     if "$out_bin"; then
       echo "RUN: $test_name OK"
