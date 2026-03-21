@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/binaryhive/Public/Blockchains/PKCertChain/build-security",
+  "command": "/usr/bin/cc  -I/home/binaryhive/Public/Blockchains/PKCertChain/include  -O3 -march=native -Wall -Wextra -std=gnu11 -o CMakeFiles/pkcertchain.dir/src/main.c.o -c /home/binaryhive/Public/Blockchains/PKCertChain/src/main.c",
+  "file": "/home/binaryhive/Public/Blockchains/PKCertChain/src/main.c",
+  "output": "CMakeFiles/pkcertchain.dir/src/main.c.o"
+}
+]

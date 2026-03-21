@@ -23,3 +23,9 @@ Example:
 3. Record results in `reports/`.
 4. If a checklist is clean, copy the log into `checklists/passed/`.
 5. Track confirmed issues in `bugs/` or `vulnerabilities/`.
+
+## Automated local audit
+Run the local audit script (manual, on demand):
+- `./scripts/security_audit.sh`
+
+It writes a timestamped log to `tests/security/reports/` and never runs automatically.

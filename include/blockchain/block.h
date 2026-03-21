@@ -33,6 +33,8 @@ typedef struct __attribute__((aligned(32)))
 BLOCK_INLINE void block_init(block *blk)
 {
     cert_init(&blk->cert);
+    uint256_zero(&blk->prevHash);
+    blk->height = 0;
     blk->timestamp = 0;
 }
 
@@ -79,6 +81,8 @@ BLOCK_INLINE void block_set_height(block *blk, uint64_t height)
 BLOCK_INLINE void block_copy(block *dst, const block *src)
 {
     cert_copy(&dst->cert, &src->cert);
+    memcpy(&dst->prevHash, &src->prevHash, UINT256_SIZE);
+    dst->height = src->height;
     dst->timestamp = src->timestamp;
 }
 
