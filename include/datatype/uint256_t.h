@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <endian.h>
 #include "datatype/OpStatus.h"
 #if !defined(__linux__)
 #error "This implementation is Linux optimized only"
