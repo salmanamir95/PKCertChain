@@ -1,9 +1,8 @@
 #ifndef UTIL_TO_BO_DEF_PRIMITIVES_H
 #define UTIL_TO_BO_DEF_PRIMITIVES_H
 
-#if !defined(__linux__)
-#error "This implementation is Linux optimized only"
-#endif
+#include "pkcertchain_config.h"
+
 
 #include <string.h>
 #include <stdint.h>

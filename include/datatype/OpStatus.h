@@ -1,6 +1,10 @@
 #ifndef OP_STATUS_H
 #define OP_STATUS_H
 
+#include "pkcertchain_config.h"
+
+
+
 #include <stdint.h>
 
 typedef uint8_t OpStatus_t;

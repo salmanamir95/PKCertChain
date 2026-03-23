@@ -1,6 +1,9 @@
 #ifndef MINI_POW_SOLVE_H
 #define MINI_POW_SOLVE_H
 
+#include "pkcertchain_config.h"
+
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
@@ -10,10 +13,6 @@
 #include "util/To_BO_Def_Primitives.h"
 #include "util/Size_Offsets.h"
 #include "datatype/OpStatus.h"
-#if !defined(__linux__)
-#error "This implementation is Linux optimized only"
-#endif
-
 #define MINI_POW_SOLVE_INLINE static inline __attribute__((always_inline))
 
 #define MINI_POW_SOLVE_SERIALIZED_SIZE MINI_POW_SOLVE_SIZE

@@ -1,6 +1,10 @@
 #ifndef MINI_POW_SOLVE_VERIFY_H
 #define MINI_POW_SOLVE_VERIFY_H
 
+#include "pkcertchain_config.h"
+
+
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>

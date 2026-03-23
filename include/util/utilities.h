@@ -1,6 +1,9 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 
+#include "pkcertchain_config.h"
+
+
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -8,10 +11,6 @@
 #include <openssl/sha.h>
 
 #include "datatype/uint256_t.h"
-
-#if !defined(__linux__)
-#error "This implementation is Linux optimized only"
-#endif
 
 #define UTIL_INLINE static inline __attribute__((always_inline))
 

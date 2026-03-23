@@ -1,6 +1,10 @@
 #ifndef SIZE_OFFSETS_H
 #define SIZE_OFFSETS_H
 
+#include "pkcertchain_config.h"
+
+
+
 // Primitive sizes
 #define UINT8_SIZE 1
 #define UINT16_SIZE 2

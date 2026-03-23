@@ -1,13 +1,12 @@
 #ifndef UTIL_TO_BO_BE_PRIMITIVES_H
 #define UTIL_TO_BO_BE_PRIMITIVES_H
 
+#include "pkcertchain_config.h"
+
+
 #include <endian.h>
 #include <stdint.h>
 #include <string.h>
-
-#if !defined(__linux__)
-#error "This implementation is Linux optimized only"
-#endif
 
 static inline void serialize_u8(uint8_t v, uint8_t *out)
 {

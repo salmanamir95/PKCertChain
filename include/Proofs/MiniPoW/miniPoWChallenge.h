@@ -1,6 +1,9 @@
 #ifndef MINI_POW_CHALLENGE_H
 #define MINI_POW_CHALLENGE_H
 
+#include "pkcertchain_config.h"
+
+
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
@@ -11,10 +14,6 @@
 #include "util/To_BO_Def_Primitives.h"
 #include "util/Size_Offsets.h"
 #include "datatype/OpStatus.h"
-
-#if !defined(__linux__)
-#error "This implementation is Linux optimized only"
-#endif
 
 #define MINI_POW_CHALLENGE_INLINE static inline __attribute__((always_inline))
 

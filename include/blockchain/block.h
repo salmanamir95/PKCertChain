@@ -1,6 +1,9 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
+#include "pkcertchain_config.h"
+
+
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
@@ -10,10 +13,6 @@
 #include "util/To_BO_BE_Pimitives.h"
 #include "util/To_BO_Def_Primitives.h"
 #include "datatype/OpStatus.h"
-
-#if !defined(__linux__)
-#error "This implementation is Linux optimized only"
-#endif
 
 #define BLOCK_INLINE static inline __attribute__((always_inline))
 #define BLOCK_SERIALIZED_SIZE BLOCK_SIZE

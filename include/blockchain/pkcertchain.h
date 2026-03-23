@@ -1,6 +1,14 @@
 #ifndef PKCERTCHAIN_H
 #define PKCERTCHAIN_H
 
+#include "pkcertchain_config.h"
+
+
+
+#ifndef PKCERTCHAIN_INLINE
+#define PKCERTCHAIN_INLINE static inline __attribute__((always_inline))
+#endif
+
 #include <stdint.h>
 #include "blockchain/block.h"
 
