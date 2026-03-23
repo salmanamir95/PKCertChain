@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 #include "datatype/uint256_t.h"
-#include "datatype/OpStatus.h"
 #include "util/Size_Offsets.h"
 
 #if !defined(__linux__)
@@ -65,40 +64,6 @@ CERT_INLINE void cert_copy(certificate * dst, const certificate * src){
     dst->id = src->id;
     memset(dst->reserved, 0, sizeof(dst->reserved));
 }
-
-
-CERT_INLINE OpStatus_t cert_serialize(certificate *cert, uint8_t* buf, size_t buf_len) {
-    if (!cert || !buf) return OP_NULL_PTR;             // null pointer check
-    if (buf_len < CERT_SIZE) return OP_BUF_TOO_SMALL;  // buffer too small
-
-    OpStatus_t status =  uint256_serialize(&cert->pubSignKey, buf, UINT256_SIZE);        // bytes 0..31
-    if (status != OP_SUCCESS) return status;
-
-    status = uint256_serialize(&cert->pubEncKey, buf + UINT256_SIZE, UINT256_SIZE);    // bytes 32..63
-    if (status != OP_SUCCESS) return status;
-
-    buf[CERT_SIZE - 1] = cert->id;                               // byte 64
-
-    return OP_SUCCESS;
-}
-
-
-
-CERT_INLINE OpStatus_t cert_deserialize(certificate *cert, const uint8_t* buf, size_t buf_len) {
-    if (!cert || !buf) return OP_NULL_PTR;             // null pointer check
-    if (buf_len < CERT_SIZE) return OP_BUF_TOO_SMALL;  // buffer too small
-
-    OpStatus_t status = uint256_deserialize(&cert->pubSignKey, buf, UINT256_SIZE);  // bytes 0..31
-    if (status != OP_SUCCESS) return status;
-
-    status = uint256_deserialize(&cert->pubEncKey, buf + UINT256_SIZE, UINT256_SIZE);         // bytes 32..63
-    if (status != OP_SUCCESS) return status;
-
-    cert->id = buf[CERT_SIZE-1];  // restore id
-
-    return OP_SUCCESS;
-}
-
 
 
 #endif // CERTIFICATE_H

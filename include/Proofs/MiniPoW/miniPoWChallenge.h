@@ -2,10 +2,12 @@
 #define MINI_POW_CHALLENGE_H
 
 #include <stdint.h>
+#include <string.h>
 #include "datatype/OpStatus.h"
 #include "blockchain/block.h"
 #include "datatype/uint256_t.h"
 #include "util/utilities.h"
+#include "util/pack.h"
 
 #if !defined(__linux__)
 #error "This implementation is Linux optimized only"
@@ -72,51 +74,24 @@ MINI_POW_CHALLENGE_INLINE void mini_pow_challenge_copy(mini_pow_challenge_t * ds
  */
 MINI_POW_CHALLENGE_INLINE OpStatus_t generate_mini_pow_Challenge(block* block, uint8_t complexity, mini_pow_challenge_t* pow)
 {
-    uint8_t buf[BLOCK_SIZE];
+    uint8_t buf[CERT_SIZE + UINT256_SIZE + UINT64_SIZE + UINT64_SIZE];
+    const size_t packed_len = sizeof(buf);
 
-    OpStatus_t status = block_serialize(block, buf, BLOCK_SIZE);
-    if (status != OP_SUCCESS) return status;
+    if (!block || !pow) return OP_NULL_PTR;
 
+    pack_uint256_be(&block->cert.pubSignKey, buf);
+    pack_uint256_be(&block->cert.pubEncKey, buf + UINT256_SIZE);
+    buf[CERT_SIZE - 1] = block->cert.id;
 
-    hash256_buffer(buf, BLOCK_SIZE, &pow->challenge);
+    pack_uint256_be(&block->prevHash, buf + CERT_SIZE);
+    pack_u64_be(block->height, buf + CERT_SIZE + UINT256_SIZE);
+    pack_u64_be(block->timestamp, buf + CERT_SIZE + UINT256_SIZE + UINT64_SIZE);
 
-    // Zero-copy deterministic hash
-    hash256_buffer(buf, BLOCK_SIZE, &pow->challenge);
+    hash256_buffer(buf, packed_len, &pow->challenge);
 
     // Set PoW complexity
     pow->complexity = complexity;
 
     return OP_SUCCESS;
 }
-
-MINI_POW_CHALLENGE_INLINE OpStatus_t mini_pow_challenge_serialize(mini_pow_challenge_t *pow, uint8_t* buf, size_t buf_len)
-{
-    if (!pow || !buf) return OP_NULL_PTR;
-    if (buf_len < MINI_POW_CHALLENGE_SIZE) return OP_BUF_TOO_SMALL;
-
-    OpStatus_t status = uint256_serialize(&pow->challenge, buf, UINT256_SIZE);
-    if (status != OP_SUCCESS) return status;
-
-    buf[32] = pow->complexity;
-    buf[33] = pow->challenge_id;
-
-    return OP_SUCCESS;  
-}
-
-
-MINI_POW_CHALLENGE_INLINE OpStatus_t mini_pow_challenge_deserialize(mini_pow_challenge_t *pow, uint8_t* buf, size_t buf_len)
-{
-    if (!pow || !buf) return OP_NULL_PTR;
-    if (buf_len < MINI_POW_CHALLENGE_SIZE) return OP_BUF_TOO_SMALL;
-
-    OpStatus_t status = uint256_deserialize(&pow->challenge, buf, UINT256_SIZE);
-    if (status != OP_SUCCESS) return status;
-    pow->complexity = buf[32];
-    pow->challenge_id = buf[33];
-
-    return OP_SUCCESS;  
-}
-
-
-
 #endif // MINI_POW_CHALLENGE_H

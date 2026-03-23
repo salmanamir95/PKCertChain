@@ -7,6 +7,7 @@
 #define MINI_POW_VERIFY_INLINE static inline __attribute__((always_inline))
 #include "Proofs/MiniPoW/miniPoWChallenge.h"
 #include "Proofs/MiniPoW/miniPoWSolve.h"
+#include "util/pack.h"
 
 
 MINI_POW_VERIFY_INLINE bool isValidChallenge(const mini_pow_challenge_t* pow, const mini_pow_solve_t* solve){
@@ -14,18 +15,13 @@ MINI_POW_VERIFY_INLINE bool isValidChallenge(const mini_pow_challenge_t* pow, co
     if (!(solve->challenge_id == pow->challenge_id)) return false;
 
     uint256 hash;
-    OpStatus_t status;
-    uint8_t buf[UINT64_SIZE];
-    uint8_t buf512[UINT512_SIZE];
-    uint512 concat;
+    uint8_t nonce_buf[UINT64_SIZE];
+    uint8_t concat_buf[UINT256_SIZE * 2];
 
-    status = uint64_t_serialize(solve->nonce, buf, UINT64_SIZE);
-    if (status != OP_SUCCESS) return false;
-    hash256_buffer(buf, UINT64_SIZE, &hash);
-    uint512_from_two_uint256(&concat, &pow->challenge, &hash);
-    status = uint512_serialize(&concat, buf512, UINT512_SIZE);
-    if (status != OP_SUCCESS) return false;
-    hash256_buffer(buf512,UINT512_SIZE,&hash);
+    pack_u64_be(solve->nonce, nonce_buf);
+    hash256_buffer(nonce_buf, UINT64_SIZE, &hash);
+    pack_two_uint256_be(&pow->challenge, &hash, concat_buf);
+    hash256_buffer(concat_buf, sizeof(concat_buf), &hash);
     return check_complexity_met(&hash, pow->complexity);
 }
 

@@ -4,9 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-#include <endian.h>
 #include "datatype/uint256_t.h"
-#include "datatype/OpStatus.h"
 #include "util/Size_Offsets.h"
 
 
@@ -73,37 +71,6 @@ U512_INLINE void uint512_copy(uint512 *dst, const uint512 *src)
     memcpy(dst, src, sizeof(uint512));
 }
 
-
-/* ---------- Serialize / Deserialize ---------- */
-
-U512_INLINE OpStatus_t uint512_serialize(const uint512 *u, uint8_t *buf, size_t buf_len)
-{
-    if (!u || !buf) return OP_NULL_PTR;
-    if (buf_len < UINT512_SIZE) return OP_BUF_TOO_SMALL;
-
-    for (int i = 0; i < 8; ++i)
-    {
-        uint64_t w_be = htobe64(u->w[i]);
-        memcpy(buf + i*8, &w_be, 8);
-    }
-
-    return OP_SUCCESS;
-}
-
-U512_INLINE OpStatus_t uint512_deserialize(uint512 *u, const uint8_t *buf, size_t buf_len)
-{
-    if (!u || !buf) return OP_NULL_PTR;
-    if (buf_len < UINT512_SIZE) return OP_BUF_TOO_SMALL;
-
-    for (int i = 0; i < 8; ++i)
-    {
-        uint64_t w_be;
-        memcpy(&w_be, buf + i*8, 8);
-        u->w[i] = be64toh(w_be);
-    }
-
-    return OP_SUCCESS;
-}
 
 
 U512_INLINE void uint512_from_two_uint256(uint512 *out, const uint256 *high, const uint256 *low)

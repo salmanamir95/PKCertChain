@@ -3,37 +3,20 @@ project(pkcertchain C)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -march=native -Wall -Wextra")
-add_compile_definitions(_DEFAULT_SOURCE)
 
 find_package(OpenSSL REQUIRED)
 
-# Recursive but only project folders
-file(GLOB_RECURSE SOURCES
+set(PKCERTCHAIN_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+file(GLOB_RECURSE PKCERTCHAIN_SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/**/*.c"
 )
 
-# Exclude anything in build/ or hidden directories
-list(FILTER SOURCES EXCLUDE REGEX ".*/build/.*")
-list(FILTER SOURCES EXCLUDE REGEX ".*/\\.git/.*")
+add_executable(pkcertchain ${PKCERTCHAIN_SOURCES})
 
-file(GLOB_RECURSE HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/**/*.h"
-)
+target_include_directories(pkcertchain PRIVATE ${PKCERTCHAIN_INCLUDE_DIR})
 
-add_executable(pkcertchain
-    ${SOURCES}
-    ${HEADERS}   # optional for IDE
-)
+target_compile_definitions(pkcertchain PRIVATE _DEFAULT_SOURCE)
+target_compile_options(pkcertchain PRIVATE -O3 -Wall -Wextra)
 
-target_include_directories(pkcertchain
-    PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
-
-target_link_libraries(pkcertchain
-    PRIVATE
-    OpenSSL::Crypto
-)
+target_link_libraries(pkcertchain PRIVATE OpenSSL::Crypto)

@@ -4,10 +4,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-#include <endian.h> // htobe64
 #include "datatype/uint256_t.h"
 #include "blockchain/certificate.h"
-#include "util/ser_primitives.h"
 
 #if !defined(__linux__)
 #error "This implementation is Linux optimized only"
@@ -84,62 +82,6 @@ BLOCK_INLINE void block_copy(block *dst, const block *src)
     memcpy(&dst->prevHash, &src->prevHash, UINT256_SIZE);
     dst->height = src->height;
     dst->timestamp = src->timestamp;
-}
-
-BLOCK_INLINE OpStatus_t block_serialize(block *blk, uint8_t *buf, size_t buf_len)
-{
-    if (!blk || !buf)
-        return OP_NULL_PTR;
-    if (buf_len < BLOCK_SIZE)
-        return OP_BUF_TOO_SMALL;
-
-    memset(buf, 0, buf_len);
-
-    // serialize certificate
-    OpStatus_t status = cert_serialize(&blk->cert, buf, CERT_SIZE);
-    if (status != OP_SUCCESS)
-        return status;
-
-    // serialize timestamp (big-endian)
-    status = uint256_serialize(&blk->prevHash, buf + CERT_SIZE, UINT256_SIZE);
-    if (status != OP_SUCCESS)
-        return status;
-
-    status = uint64_t_serialize(blk->height, buf + CERT_SIZE + UINT256_SIZE, UINT64_SIZE);
-    if (status != OP_SUCCESS)
-        return status;
-
-    status = uint64_t_serialize(blk->timestamp, buf + CERT_SIZE + UINT256_SIZE + UINT64_SIZE, UINT64_SIZE);
-    if (status != OP_SUCCESS)
-        return status;
-
-    return OP_SUCCESS;
-}
-
-BLOCK_INLINE OpStatus_t block_deserialize(block *blk, const uint8_t *buf, size_t buf_len)
-{
-    if (!blk || !buf)
-        return OP_NULL_PTR;
-    if (buf_len < BLOCK_SIZE)
-        return OP_BUF_TOO_SMALL;
-
-    // deserialize
-    OpStatus_t status = cert_deserialize(&blk->cert, buf, CERT_SIZE);
-    if (status != OP_SUCCESS)
-        return status;
-
-    status = uint256_deserialize(&blk->prevHash, buf + CERT_SIZE, UINT256_SIZE);
-    if (status != OP_SUCCESS)
-        return status;
-
-    status = uint64_t_deserialize(&blk->height, buf + CERT_SIZE + UINT256_SIZE, UINT64_SIZE);
-    if (status != OP_SUCCESS)
-        return status;
-
-    // deserialize timestamp
-    status = uint64_t_deserialize(&blk->timestamp, buf + CERT_SIZE + UINT256_SIZE + UINT64_SIZE, UINT64_SIZE);
-
-    return OP_SUCCESS;
 }
 
 #endif // BLOCK_H
