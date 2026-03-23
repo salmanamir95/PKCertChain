@@ -54,4 +54,28 @@ static inline void deserialize_u64_def(const uint8_t *in, uint64_t *out, size_t 
     *out = le64toh(v);
 }
 
+static inline void deserialize_u16_be(const uint8_t *in, uint16_t *out, size_t size)
+{
+    (void)size;
+    uint16_t v;
+    memcpy(&v, in, sizeof(uint16_t));
+    *out = be16toh(v);
+}
+
+static inline void deserialize_u32_be(const uint8_t *in, uint32_t *out, size_t size)
+{
+    (void)size;
+    uint32_t v;
+    memcpy(&v, in, sizeof(uint32_t));
+    *out = be32toh(v);
+}
+
+static inline void deserialize_u64_be(const uint8_t *in, uint64_t *out, size_t size)
+{
+    (void)size;
+    uint64_t v;
+    memcpy(&v, in, sizeof(uint64_t));
+    *out = be64toh(v);
+}
+
 #endif // UTIL_TO_BO_DEF_PRIMITIVES_H

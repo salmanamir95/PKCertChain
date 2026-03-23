@@ -6,12 +6,17 @@
 #include <string.h>
 #include "datatype/uint256_t.h"
 #include "blockchain/certificate.h"
+#include "util/Size_Offsets.h"
+#include "util/To_BO_BE_Pimitives.h"
+#include "util/To_BO_Def_Primitives.h"
+#include "datatype/OpStatus.h"
 
 #if !defined(__linux__)
 #error "This implementation is Linux optimized only"
 #endif
 
 #define BLOCK_INLINE static inline __attribute__((always_inline))
+#define BLOCK_SERIALIZED_SIZE BLOCK_SIZE
 
 /*
  * PKCertChain Block
@@ -25,7 +30,7 @@ typedef struct __attribute__((aligned(32)))
     certificate cert; // 68 bytes: pubSignKey + pubEncKey + id
     uint256 prevHash; //32
     uint64_t height; //8
-    uint64_t timestamp;   // 16 monotonic time, canonical 64-bit
+    uint64_t timestamp;   // 8 monotonic time, canonical 64-bit
 } block;
 
 BLOCK_INLINE void block_init(block *blk)
@@ -82,6 +87,30 @@ BLOCK_INLINE void block_copy(block *dst, const block *src)
     memcpy(&dst->prevHash, &src->prevHash, UINT256_SIZE);
     dst->height = src->height;
     dst->timestamp = src->timestamp;
+}
+
+BLOCK_INLINE OpStatus_t block_serialize(const block *blk, uint8_t *out, size_t out_size)
+{
+    if (!blk || !out) return OP_NULL_PTR;
+    if (out_size < BLOCK_SERIALIZED_SIZE) return OP_BUF_TOO_SMALL;
+
+    if (cert_serialize(&blk->cert, out, CERT_SIZE) != OP_SUCCESS) return OP_INVALID_INPUT;
+    if (uint256_serialize_be(&blk->prevHash, out + CERT_SIZE, UINT256_SIZE) != OP_SUCCESS) return OP_INVALID_INPUT;
+    serialize_u64_be(blk->height, out + CERT_SIZE + UINT256_SIZE);
+    serialize_u64_be(blk->timestamp, out + CERT_SIZE + UINT256_SIZE + UINT64_SIZE);
+    return OP_SUCCESS;
+}
+
+BLOCK_INLINE OpStatus_t block_deserialize(const uint8_t *in, size_t in_size, block *blk)
+{
+    if (!blk || !in) return OP_NULL_PTR;
+    if (in_size < BLOCK_SERIALIZED_SIZE) return OP_BUF_TOO_SMALL;
+
+    if (cert_deserialize(in, CERT_SIZE, &blk->cert) != OP_SUCCESS) return OP_INVALID_INPUT;
+    if (uint256_deserialize_be(in + CERT_SIZE, UINT256_SIZE, &blk->prevHash) != OP_SUCCESS) return OP_INVALID_INPUT;
+    deserialize_u64_be(in + CERT_SIZE + UINT256_SIZE, &blk->height, sizeof(uint64_t));
+    deserialize_u64_be(in + CERT_SIZE + UINT256_SIZE + UINT64_SIZE, &blk->timestamp, sizeof(uint64_t));
+    return OP_SUCCESS;
 }
 
 #endif // BLOCK_H

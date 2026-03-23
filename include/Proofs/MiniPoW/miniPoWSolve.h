@@ -8,20 +8,15 @@
 #include "datatype/uint256_t.h"
 #include "util/utilities.h"
 #include "util/To_BO_Def_Primitives.h"
+#include "util/Size_Offsets.h"
+#include "datatype/OpStatus.h"
 #if !defined(__linux__)
 #error "This implementation is Linux optimized only"
 #endif
 
 #define MINI_POW_SOLVE_INLINE static inline __attribute__((always_inline))
 
-#define MINI_POW_SOLVE_SERIALIZED_SIZE (UINT64_SIZE + 1 + 1 + 2)
-
-MINI_POW_SOLVE_INLINE uint64_t deserialize_u64_be_local(const uint8_t *in)
-{
-    uint64_t be;
-    memcpy(&be, in, sizeof(uint64_t));
-    return be64toh(be);
-}
+#define MINI_POW_SOLVE_SERIALIZED_SIZE MINI_POW_SOLVE_SIZE
 
 typedef struct __attribute__((aligned(32)))
 {
@@ -67,28 +62,28 @@ MINI_POW_SOLVE_INLINE void mini_pow_solve_set_complexity(mini_pow_solve_t * pow,
     pow->complexity = complexity;
 }
 
-MINI_POW_SOLVE_INLINE bool mini_pow_solve_serialize(const mini_pow_solve_t *pow, uint8_t *out, size_t out_size)
+MINI_POW_SOLVE_INLINE OpStatus_t mini_pow_solve_serialize(const mini_pow_solve_t *pow, uint8_t *out, size_t out_size)
 {
-    if (!pow || !out) return false;
-    if (out_size < MINI_POW_SOLVE_SERIALIZED_SIZE) return false;
+    if (!pow || !out) return OP_NULL_PTR;
+    if (out_size < MINI_POW_SOLVE_SERIALIZED_SIZE) return OP_BUF_TOO_SMALL;
 
     serialize_u64_be(pow->nonce, out);
     serialize_u8(pow->complexity, out + UINT64_SIZE);
     serialize_u8(pow->challenge_id, out + UINT64_SIZE + 1);
     memcpy(out + UINT64_SIZE + 2, pow->reserved, sizeof(pow->reserved));
-    return true;
+    return OP_SUCCESS;
 }
 
-MINI_POW_SOLVE_INLINE bool mini_pow_solve_deserialize(const uint8_t *in, size_t in_size, mini_pow_solve_t *pow)
+MINI_POW_SOLVE_INLINE OpStatus_t mini_pow_solve_deserialize(const uint8_t *in, size_t in_size, mini_pow_solve_t *pow)
 {
-    if (!pow || !in) return false;
-    if (in_size < MINI_POW_SOLVE_SERIALIZED_SIZE) return false;
+    if (!pow || !in) return OP_NULL_PTR;
+    if (in_size < MINI_POW_SOLVE_SERIALIZED_SIZE) return OP_BUF_TOO_SMALL;
 
-    pow->nonce = deserialize_u64_be_local(in);
+    deserialize_u64_be(in, &pow->nonce, sizeof(uint64_t));
     pow->complexity = in[UINT64_SIZE];
     pow->challenge_id = in[UINT64_SIZE + 1];
     memcpy(pow->reserved, in + UINT64_SIZE + 2, sizeof(pow->reserved));
-    return true;
+    return OP_SUCCESS;
 }
 
 //exactly check the first n bits exactly zero and no more should be zero
@@ -116,7 +111,7 @@ MINI_POW_SOLVE_INLINE void mini_pow_solve_solve_challenge(mini_pow_challenge_t *
     {
         serialize_u64_be(i, nonce_buf);
         hash256_buffer(nonce_buf, UINT64_SIZE, &hash);
-        serialize_two_uint256_be(challenge, &hash, concat_buf);
+        uint256_serialize_two_be(challenge, &hash, concat_buf, UINT256_SIZE * 2);
         hash256_buffer(concat_buf, sizeof(concat_buf), &hash);
         if (check_complexity_met(&hash, pow->complexity)) {
             found = true;
