@@ -22,9 +22,9 @@
 
 typedef struct __attribute__((aligned(32)))
 {
-    certificate cert; // 96 bytes: pubSignKey + pubEncKey + id
-    uint256 prevHash;
-    uint64_t height;
+    certificate cert; // 68 bytes: pubSignKey + pubEncKey + id
+    uint256 prevHash; //32
+    uint64_t height; //16 
     uint64_t timestamp;   // monotonic time, canonical 64-bit
 } block;
 

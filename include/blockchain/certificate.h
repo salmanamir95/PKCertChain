@@ -23,7 +23,7 @@ typedef struct __attribute__((aligned(32))) {
     uint256 pubSignKey;    // 32 bytes
     uint256 pubEncKey;     // 32 bytes
     uint8_t  id;           // 1 byte node id
-    uint8_t  reserved[31]; // padding
+    uint8_t  reserved[3]; // padding 3 byte
 } certificate;
 
 CERT_INLINE void cert_init(certificate * cert){
