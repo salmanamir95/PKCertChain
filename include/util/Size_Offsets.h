@@ -15,7 +15,7 @@
 
 // Struct sizes (total serialized size here in serialized we added padings too because for memory alignment and hash consistency)
 #define CERT_SIZE (UINT8_SIZE + 2 * UINT256_SIZE + 3 * UINT8_SIZE)                            // 1 + 32 + 32 + 1+1+1 = 68
-#define BLOCK_SIZE (CERT_SIZE + 2 * UINT256_SIZE + 2 * UINT64_SIZE) // 68 + 32 + 32 + 2 * 8 = 148
+#define BLOCK_SIZE (CERT_SIZE + 2 * UINT256_SIZE + UINT512_SIZE + 2 * UINT64_SIZE) // 68 + 32 + 32 + 64 + 2 * 8 = 212
 #define PK_CERT_CHAIN_SIZE (100 * BLOCK_SIZE + UINT32_SIZE) // 100 blocks + index (serialized size)
 
 #define MINI_POW_CHALLENGE_SIZE (UINT256_SIZE + 2 * UINT8_SIZE + 2* UINT8_SIZE) // 36 bytes

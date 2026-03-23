@@ -8,9 +8,11 @@
 #include <stddef.h>
 #include <string.h>
 #include "datatype/uint256_t.h"
+#include "datatype/uint512.h"
 #include "util/Size_Offsets.h"
 #include "util/To_BO_BE_Pimitives.h"
 #include "util/To_BO_Def_Primitives.h"
+#include "util/utilities.h"
 #include "datatype/OpStatus.h"
 
 
@@ -91,6 +93,29 @@ CERT_INLINE OpStatus_t cert_deserialize(const uint8_t *in, size_t in_size, certi
     deserialize_u8_def(in + (UINT256_SIZE * 2), &cert->id, sizeof(uint8_t));
     memcpy(cert->reserved, in + (UINT256_SIZE * 2) + 1, sizeof(cert->reserved));
     return OP_SUCCESS;
+}
+
+CERT_INLINE OpStatus_t hash_certificate(const certificate *cert, uint256 *out)
+{
+    if (!cert || !out) return OP_NULL_PTR;
+
+    uint8_t buf[CERT_SIZE];
+    OpStatus_t st = cert_serialize(cert, buf, sizeof(buf));
+    if (st != OP_SUCCESS) return st;
+
+    hash256_buffer(buf, sizeof(buf), out);
+    return OP_SUCCESS;
+}
+
+CERT_INLINE OpStatus_t cert_sign(const certificate *cert, const uint256 *priv_key, uint512 *out_sig)
+{
+    if (!cert || !priv_key || !out_sig) return OP_NULL_PTR;
+
+    uint8_t buf[CERT_SIZE];
+    OpStatus_t st = cert_serialize(cert, buf, sizeof(buf));
+    if (st != OP_SUCCESS) return st;
+
+    return sign_buffer_ed25519(buf, sizeof(buf), priv_key, out_sig);
 }
 
 
