@@ -17,4 +17,10 @@ typedef struct __attribute__((aligned(4))) {
     uint32_t index;
 } PKCertChain;
 
+PKCERTCHAIN_INLINE void Gensis_Block(PKCertChain *chain)
+{
+    (void)chain;
+    // placeholder
+}
+
 #endif // PKCERTCHAIN_H

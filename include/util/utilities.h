@@ -103,6 +103,92 @@ UTIL_INLINE OpStatus_t sign_buffer_ed25519(const uint8_t *in, size_t in_len, con
     return OP_SUCCESS;
 }
 
+/*
+ * Generate Ed25519 signing keypair.
+ *
+ * Output:
+ *   - out_priv: 32-byte private key (seed)
+ *   - out_pub: 32-byte public key
+ */
+UTIL_INLINE OpStatus_t GenerateSignKeys(uint256 *out_priv, uint256 *out_pub)
+{
+    if (!out_priv || !out_pub) return OP_NULL_PTR;
+    uint256_zero(out_priv);
+    uint256_zero(out_pub);
+
+    EVP_PKEY_CTX *pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_ED25519, NULL);
+    if (!pctx) return OP_INVALID_INPUT;
+    if (EVP_PKEY_keygen_init(pctx) <= 0) {
+        EVP_PKEY_CTX_free(pctx);
+        return OP_INVALID_INPUT;
+    }
+
+    EVP_PKEY *pkey = NULL;
+    if (EVP_PKEY_keygen(pctx, &pkey) <= 0 || !pkey) {
+        EVP_PKEY_CTX_free(pctx);
+        return OP_INVALID_INPUT;
+    }
+
+    size_t priv_len = UINT256_SIZE;
+    size_t pub_len = UINT256_SIZE;
+    if (EVP_PKEY_get_raw_private_key(pkey, (unsigned char *)out_priv->w, &priv_len) != 1 ||
+        EVP_PKEY_get_raw_public_key(pkey, (unsigned char *)out_pub->w, &pub_len) != 1 ||
+        priv_len != UINT256_SIZE || pub_len != UINT256_SIZE) {
+        EVP_PKEY_free(pkey);
+        EVP_PKEY_CTX_free(pctx);
+        uint256_zero(out_priv);
+        uint256_zero(out_pub);
+        return OP_INVALID_INPUT;
+    }
+
+    EVP_PKEY_free(pkey);
+    EVP_PKEY_CTX_free(pctx);
+    return OP_SUCCESS;
+}
+
+/*
+ * Generate X25519 encryption keypair.
+ *
+ * Output:
+ *   - out_priv: 32-byte private key
+ *   - out_pub: 32-byte public key
+ */
+UTIL_INLINE OpStatus_t GenerateEncKeys(uint256 *out_priv, uint256 *out_pub)
+{
+    if (!out_priv || !out_pub) return OP_NULL_PTR;
+    uint256_zero(out_priv);
+    uint256_zero(out_pub);
+
+    EVP_PKEY_CTX *pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_X25519, NULL);
+    if (!pctx) return OP_INVALID_INPUT;
+    if (EVP_PKEY_keygen_init(pctx) <= 0) {
+        EVP_PKEY_CTX_free(pctx);
+        return OP_INVALID_INPUT;
+    }
+
+    EVP_PKEY *pkey = NULL;
+    if (EVP_PKEY_keygen(pctx, &pkey) <= 0 || !pkey) {
+        EVP_PKEY_CTX_free(pctx);
+        return OP_INVALID_INPUT;
+    }
+
+    size_t priv_len = UINT256_SIZE;
+    size_t pub_len = UINT256_SIZE;
+    if (EVP_PKEY_get_raw_private_key(pkey, (unsigned char *)out_priv->w, &priv_len) != 1 ||
+        EVP_PKEY_get_raw_public_key(pkey, (unsigned char *)out_pub->w, &pub_len) != 1 ||
+        priv_len != UINT256_SIZE || pub_len != UINT256_SIZE) {
+        EVP_PKEY_free(pkey);
+        EVP_PKEY_CTX_free(pctx);
+        uint256_zero(out_priv);
+        uint256_zero(out_pub);
+        return OP_INVALID_INPUT;
+    }
+
+    EVP_PKEY_free(pkey);
+    EVP_PKEY_CTX_free(pctx);
+    return OP_SUCCESS;
+}
+
 
 
 #endif // UTILITIES_H
