@@ -1,1 +1,0 @@
-/usr/bin/cc  -O3 -march=native -Wall -Wextra CMakeFiles/pkcertchain.dir/src/main.c.o -o pkcertchain  /usr/lib/x86_64-linux-gnu/libcrypto.so 
