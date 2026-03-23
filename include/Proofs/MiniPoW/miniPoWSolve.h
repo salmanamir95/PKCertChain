@@ -18,7 +18,7 @@
 
 #define MINI_POW_SOLVE_SERIALIZED_SIZE MINI_POW_SOLVE_SIZE
 
-typedef struct __attribute__((aligned(32)))
+typedef struct __attribute__((aligned(4)))
 {
     uint64_t nonce;     // 8 bytes
     uint8_t complexity; // 1 byte

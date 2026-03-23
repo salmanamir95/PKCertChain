@@ -22,12 +22,12 @@
 
 /*
  * mini_pow_challenge_t:
- *  - 32-byte aligned
+ *  - 4-byte aligned (32-bit alignment)
  *  - deterministic 256-bit challenge
  *  - complexity 0-255 bits
- *  - optional padding for cache alignment
+ *  - padding to keep size a 32-bit multiple
  */
-typedef struct __attribute__((aligned(32))) {
+typedef struct __attribute__((aligned(4))) {
     uint256 challenge;   // 32 bytes
     uint8_t complexity;  // 1 byte
     uint8_t challenge_id; // 1 byte

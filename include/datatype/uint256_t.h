@@ -15,8 +15,8 @@
 /* Force aggressive inlining */
 #define U256_INLINE static inline __attribute__((always_inline))
 
-/* Align for better cache / SIMD */
-typedef struct __attribute__((aligned(32))) {
+/* 4-byte alignment (32-bit) */
+typedef struct __attribute__((aligned(4))) {
     uint64_t w[4];   /* little-endian word order */
 } uint256;
 

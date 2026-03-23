@@ -19,12 +19,12 @@
 
 /*
  * Certificate structure:
- * - Fixed-size 128 bytes for cache alignment and zero-copy
- * - Deterministic layout for serialization
- * - Future-proof padding
+ * - 4-byte aligned (32-bit alignment)
+ * - Serialized size is 68 bytes
+ * - In-memory size is typically 72 bytes on 64-bit due to uint64 alignment
  */
 
-typedef struct __attribute__((aligned(32))) {
+typedef struct __attribute__((aligned(4))) {
     uint256 pubSignKey;    // 32 bytes
     uint256 pubEncKey;     // 32 bytes
     uint8_t  id;           // 1 byte node id
