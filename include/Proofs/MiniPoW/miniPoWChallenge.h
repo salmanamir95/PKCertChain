@@ -3,17 +3,42 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <stdbool.h>
 #include "datatype/OpStatus.h"
 #include "blockchain/block.h"
 #include "datatype/uint256_t.h"
 #include "util/utilities.h"
-#include "util/pack.h"
+#include "util/To_BO_Def_Primitives.h"
 
 #if !defined(__linux__)
 #error "This implementation is Linux optimized only"
 #endif
 
 #define MINI_POW_CHALLENGE_INLINE static inline __attribute__((always_inline))
+
+#define MINI_POW_CHALLENGE_SERIALIZED_SIZE (UINT256_SIZE + 1 + 1 + 2)
+
+MINI_POW_CHALLENGE_INLINE void serialize_uint256_be(const uint256 *u, uint8_t *out32)
+{
+    for (int i = 0; i < 4; ++i) {
+        serialize_u64_be(u->w[i], out32 + (i * 8));
+    }
+}
+
+MINI_POW_CHALLENGE_INLINE void deserialize_uint256_be(const uint8_t *in32, uint256 *u)
+{
+    for (int i = 0; i < 4; ++i) {
+        uint64_t be;
+        memcpy(&be, in32 + (i * 8), sizeof(uint64_t));
+        u->w[i] = be64toh(be);
+    }
+}
+
+MINI_POW_CHALLENGE_INLINE void serialize_two_uint256_be(const uint256 *a, const uint256 *b, uint8_t *out64)
+{
+    serialize_uint256_be(a, out64);
+    serialize_uint256_be(b, out64 + 32);
+}
 
 /*
  * mini_pow_challenge_t:
@@ -66,6 +91,30 @@ MINI_POW_CHALLENGE_INLINE void mini_pow_challenge_copy(mini_pow_challenge_t * ds
     memset(dst->reserved, 0, sizeof(dst->reserved));
 }
 
+MINI_POW_CHALLENGE_INLINE bool mini_pow_challenge_serialize(const mini_pow_challenge_t *pow, uint8_t *out, size_t out_size)
+{
+    if (!pow || !out) return false;
+    if (out_size < MINI_POW_CHALLENGE_SERIALIZED_SIZE) return false;
+
+    serialize_uint256_be(&pow->challenge, out);
+    serialize_u8(pow->complexity, out + UINT256_SIZE);
+    serialize_u8(pow->challenge_id, out + UINT256_SIZE + 1);
+    memcpy(out + UINT256_SIZE + 2, pow->reserved, sizeof(pow->reserved));
+    return true;
+}
+
+MINI_POW_CHALLENGE_INLINE bool mini_pow_challenge_deserialize(const uint8_t *in, size_t in_size, mini_pow_challenge_t *pow)
+{
+    if (!pow || !in) return false;
+    if (in_size < MINI_POW_CHALLENGE_SERIALIZED_SIZE) return false;
+
+    deserialize_uint256_be(in, &pow->challenge);
+    pow->complexity = in[UINT256_SIZE];
+    pow->challenge_id = in[UINT256_SIZE + 1];
+    memcpy(pow->reserved, in + UINT256_SIZE + 2, sizeof(pow->reserved));
+    return true;
+}
+
 /*
  * generate_Challenge:
  *  - Computes SHA256 hash over the block struct
@@ -79,13 +128,13 @@ MINI_POW_CHALLENGE_INLINE OpStatus_t generate_mini_pow_Challenge(block* block, u
 
     if (!block || !pow) return OP_NULL_PTR;
 
-    pack_uint256_be(&block->cert.pubSignKey, buf);
-    pack_uint256_be(&block->cert.pubEncKey, buf + UINT256_SIZE);
+    serialize_uint256_be(&block->cert.pubSignKey, buf);
+    serialize_uint256_be(&block->cert.pubEncKey, buf + UINT256_SIZE);
     buf[CERT_SIZE - 1] = block->cert.id;
 
-    pack_uint256_be(&block->prevHash, buf + CERT_SIZE);
-    pack_u64_be(block->height, buf + CERT_SIZE + UINT256_SIZE);
-    pack_u64_be(block->timestamp, buf + CERT_SIZE + UINT256_SIZE + UINT64_SIZE);
+    serialize_uint256_be(&block->prevHash, buf + CERT_SIZE);
+    serialize_u64_be(block->height, buf + CERT_SIZE + UINT256_SIZE);
+    serialize_u64_be(block->timestamp, buf + CERT_SIZE + UINT256_SIZE + UINT64_SIZE);
 
     hash256_buffer(buf, packed_len, &pow->challenge);
 
