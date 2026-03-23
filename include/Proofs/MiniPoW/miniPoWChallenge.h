@@ -26,7 +26,7 @@ typedef struct __attribute__((aligned(32))) {
     uint256 challenge;   // 32 bytes
     uint8_t complexity;  // 1 byte
     uint8_t challenge_id; // 1 byte
-    uint8_t reserved[30]; // padding to make 32-byte multiple
+    uint8_t reserved[2]; // padding to make 32-bit multiple
 } mini_pow_challenge_t;
 
 

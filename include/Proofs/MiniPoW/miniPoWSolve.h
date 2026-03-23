@@ -19,7 +19,7 @@ typedef struct __attribute__((aligned(32)))
     uint64_t nonce;     // 8 bytes
     uint8_t complexity; // 1 byte
     uint8_t challenge_id; //1 byte
-    uint8_t reserved[22];
+    uint8_t reserved[2];
 } mini_pow_solve_t;
 
 MINI_POW_SOLVE_INLINE void mini_pow_solve_init(mini_pow_solve_t *pow)
