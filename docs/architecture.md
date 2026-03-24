@@ -54,6 +54,8 @@ typedef struct __attribute__((aligned(4))) {
     uint512 SignedByVerifier;
     uint64_t height;
     uint64_t timestamp;
+    Tier_t tier;
+    uint8_t reserved[3];
 } block;
 ```
 
@@ -61,10 +63,10 @@ typedef struct __attribute__((aligned(4))) {
 
 ```c
 typedef struct __attribute__((aligned(4))) {
-    uint256 challenge;    // 32 bytes
-    uint8_t complexity;   // 1 byte
-    uint64_t challenge_id;// 8 bytes
-    uint8_t reserved[3];  // padding
+    uint256 challenge;
+    uint8_t complexity;
+    uint64_t challenge_id;
+    uint8_t reserved[3];
 } mini_pow_challenge_t;
 ```
 
@@ -72,10 +74,10 @@ typedef struct __attribute__((aligned(4))) {
 
 ```c
 typedef struct __attribute__((aligned(4))) {
-    uint64_t nonce;       // 8 bytes
-    uint8_t complexity;   // 1 byte
-    uint64_t challenge_id;// 8 bytes
-    uint8_t reserved[3];  // padding
+    uint64_t nonce;
+    uint8_t complexity;
+    uint64_t challenge_id;
+    uint8_t reserved[3];
 } mini_pow_solve_t;
 ```
 
@@ -88,6 +90,17 @@ typedef struct __attribute__((aligned(4))) {
     uint64_t received_time_seconds;
     uint32_t target_index;
 } mini_pow_session_t;
+```
+
+**TierPoW Session (`Proofs/TierPoW/tierPoWSession.h`):**
+
+```c
+typedef struct __attribute__((aligned(4))) {
+    tier_pow_challenge_t challenge;
+    uint64_t issued_time_seconds;
+    uint64_t received_time_seconds;
+    uint32_t target_index;
+} tier_pow_session_t;
 ```
 
 ---
@@ -107,49 +120,40 @@ typedef struct __attribute__((aligned(4))) {
 - `~/.pkcertchain/<network>/wallet` created with mode `0700`.
 - Key files saved as encrypted blobs with mode `0600`.
 - `LinuxUtils` provides `save_*` and `load_*` helpers.
+- Chain snapshot stored at `~/.pkcertchain/<network>/blockchainState`.
 
 ---
 
 ## 5. PoW Flow & Queueing
 
 **Decoupled flow:**
-1. `verify_prev_block`
-2. `give_mini_pow_challenge` (creates `mini_pow_session_t`)
-3. `verify_mini_pow_solution`
-4. `add_block_if_pow`
+1. Verify previous block
+2. MiniPoW classification
+3. Tier assignment (adaptive)
+4. TierPoW mining
+5. Add block (TierPoW only)
 
 **Queueing:**
-- `mini_pow_queue_t` stores active sessions + candidate blocks.
-- `give_mini_pow_challenge_enqueue` adds sessions to the queue.
-- `add_block_from_queue` pops by `challenge_id` and prunes stale sessions.
+- MiniPoW and TierPoW each have independent session+queue modules.
+- TierPoW queue is the only path that adds blocks.
 
 **Difficulty update:**
-- Uses elapsed time between issue and solve.
-- Faster than 5 min increases complexity; slower decreases.
-- Clamped to `[1, 220]`.
+- 10-minute target (600s)
+- Faster than target increases complexity; slower decreases
+- Clamped to `[1, 220]`
 
 ---
 
-## 6. Node Heterogeneity (Design)
+## 6. Event-Driven, Multi-threaded Target (Planned)
 
-1. **Server:** Full compute/storage, highest PoW
-2. **Desktop:** Medium PoW
-3. **Edge:** Low PoW
-
-* Block target: 10 minutes (design goal)
-* Block sync interval: 5 minutes (design goal)
+- Event loop + MPSC queues
+- Zero-copy buffer passing with reference counting
+- Dedicated chain-writer thread
+- PoW workers feed events to the chain thread
 
 ---
 
-## 7. Timing
-
-* Kernel: `CLOCK_MONOTONIC_RAW` (hard RT)
-* User-space: soft timers
-* Use `uint64_t` timestamps for determinism
-
----
-
-## 8. Security Principles
+## 7. Security Principles
 
 * Canonical serialization before hashing
 * Signature verification and full PoW in user-space
@@ -158,7 +162,7 @@ typedef struct __attribute__((aligned(4))) {
 
 ---
 
-## 9. Event-Driven Kernel Design (Planned)
+## 8. Event-Driven Kernel Design (Planned)
 
 **Event types:**
 

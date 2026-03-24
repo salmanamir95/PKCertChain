@@ -4,16 +4,18 @@ PKCertChain is a Linux-focused blockchain prototype emphasizing deterministic se
 
 ## Status
 - Core data structures (block, certificate, uint256/uint512) implemented.
-- MiniPoW challenge/solve/verify flow implemented.
-- PoW session queue for outstanding challenges implemented.
+- MiniPoW (classification) implemented.
+- TierPoW (tier-based mining) implemented.
+- Independent PoW session queues for MiniPoW and TierPoW.
 - Ed25519 signing + verification helpers implemented.
 - X25519 key generation and AES-256-GCM local key storage implemented.
 - Wallet path: `~/.pkcertchain/<network>/wallet` with strict permissions.
+- Chain snapshot stored at `~/.pkcertchain/<network>/blockchainState`.
 
 ## Key Components
 - **Blockchain types:** `include/blockchain/`
-- **PoW:** `include/Proofs/MiniPoW/`
-- **PoW queue:** `include/Proofs/MiniPoW/miniPoWQueue.h`
+- **MiniPoW:** `include/Proofs/MiniPoW/`
+- **TierPoW:** `include/Proofs/TierPoW/`
 - **Crypto helpers:** `include/util/SignUtils.h`, `include/util/EncUtils.h`
 - **Wallet + OS helpers:** `include/util/WalletSetup.h`, `include/util/LinuxUtils.h`
 
@@ -22,6 +24,7 @@ PKCertChain is a Linux-focused blockchain prototype emphasizing deterministic se
 - `src/main.c` is a placeholder entrypoint.
 
 ## Next Steps
+- Event-driven, multi-threaded runtime with zero-copy buffers.
 - Add storage + chain validation logic.
 - Build CLI/GUI flows for password prompts and key management.
 - Add tests for serialization, PoW, and crypto.
