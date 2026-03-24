@@ -3,32 +3,23 @@
 
 #include "pkcertchain_config.h"
 
-
-
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 #define MINI_POW_VERIFY_INLINE static inline __attribute__((always_inline))
 #include "Proofs/MiniPoW/miniPoWChallenge.h"
 #include "Proofs/MiniPoW/miniPoWSolve.h"
-#include "util/SignUtils.h"
 #include "util/To_BO_Def_Primitives.h"
 #include "datatype/OpStatus.h"
 
-
 MINI_POW_VERIFY_INLINE bool isValidChallenge(const mini_pow_challenge_t* pow, const mini_pow_solve_t* solve){
     if(!solve || !pow) return false;
-    if (!(solve->challenge_id == pow->challenge_id)) return false;
+    if (solve->challenge_id != pow->challenge_id) return false;
+    if (solve->row != pow->row || solve->col != pow->col) return false;
+    if (solve->iteration != pow->iteration || solve->total_iterations != pow->total_iterations) return false;
 
-    uint256 hash;
-    uint8_t nonce_buf[UINT64_SIZE];
-    uint8_t concat_buf[UINT256_SIZE * 2];
-
-    serialize_u64_be(solve->nonce, nonce_buf);
-    hash256_buffer(nonce_buf, UINT64_SIZE, &hash);
-    uint256_serialize_two_be(&pow->challenge, &hash, concat_buf, UINT256_SIZE * 2);
-    hash256_buffer(concat_buf, sizeof(concat_buf), &hash);
-    return check_complexity_met(&hash, pow->complexity);
+    uint64_t expected = mini_pow_compute_element(&pow->seed, pow->row, pow->col, pow->matrix_n);
+    return expected == solve->result;
 }
 
 MINI_POW_VERIFY_INLINE OpStatus_t mini_pow_verify_serialize_inputs(const mini_pow_challenge_t *pow,

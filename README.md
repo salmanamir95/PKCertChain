@@ -5,6 +5,7 @@ PKCertChain is a Linux-focused blockchain prototype emphasizing deterministic se
 ## Status
 - Core data structures (block, certificate, uint256/uint512) implemented.
 - MiniPoW (classification) implemented.
+- MiniPoW classification kernel planned: 1000x1000 matrix multiply for ranking.
 - TierPoW (tier-based mining) implemented.
 - Independent PoW session queues for MiniPoW and TierPoW.
 - Ed25519 signing + verification helpers implemented.

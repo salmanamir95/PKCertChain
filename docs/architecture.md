@@ -137,6 +137,10 @@ typedef struct __attribute__((aligned(4))) {
 - MiniPoW and TierPoW each have independent session+queue modules.
 - TierPoW queue is the only path that adds blocks.
 
+**MiniPoW classification kernel (planned):**
+- Matrix multiplication A(1000x1000) x B(1000x1000)
+- Rank assignment based on elapsed time vs moving average
+
 **Difficulty update:**
 - 10-minute target (600s)
 - Faster than target increases complexity; slower decreases

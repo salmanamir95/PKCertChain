@@ -42,6 +42,9 @@
 - **Challenge (`Proofs/MiniPoW/miniPoWChallenge.h`)**
   - Deterministic challenge hash from serialized block fields.
   - `challenge_id` is `uint64_t`.
+- **Classification spec (planned compute kernel)**
+  - Matrix multiplication A(1000x1000) x B(1000x1000) for ranking.
+  - Tier assignment uses elapsed time vs moving average.
 - **Solve (`Proofs/MiniPoW/miniPoWSolve.h`)**
   - Brute-force nonce search.
   - Complexity check via leading-zero count (`clz256`).
@@ -95,16 +98,16 @@
   - `give_tier_pow_challenge` -> `verify_tier_pow_solution` -> add block
 - **Validation gates:**
   - Explicit validate-before helpers for each step.
-- **Difficulty update:**
-  - 10-minute target (600s)
-  - Faster than target increases complexity; slower decreases.
-  - Clamped to `[1, 220]`.
 - **Tier classification (adaptive):**
   - Based on moving average solve time.
   - Server <= 0.25 * avg
   - Desktop <= 0.60 * avg
   - Edge <= 1.50 * avg
   - MCU <= 3.00 * avg
+- **Difficulty update:**
+  - 10-minute target (600s)
+  - Faster than target increases complexity; slower decreases.
+  - Clamped to `[1, 220]`.
 
 ### 8. Status & Error Handling
 - **`OpStatus_t` (`datatype/OpStatus.h`)**

@@ -20,6 +20,7 @@
 #include "Proofs/MiniPoW/miniPoWVerify.h"
 #include "Proofs/MiniPoW/miniPoWSession.h"
 #include "Proofs/MiniPoW/miniPoWQueue.h"
+#include "Proofs/MiniPoW/miniPoWClassify.h"
 #include "Proofs/TierPoW/tierPoWChallenge.h"
 #include "Proofs/TierPoW/tierPoWSolve.h"
 #include "Proofs/TierPoW/tierPoWVerify.h"
@@ -109,18 +110,23 @@ PKCERTCHAIN_INLINE OpStatus_t verify_prev_block(const PKCertChain *chain)
 }
 
 PKCERTCHAIN_INLINE OpStatus_t validate_before_send_mini_pow(const PKCertChain *chain,
-                                                            const block *candidate)
+                                                            const block *candidate,
+                                                            uint16_t row,
+                                                            uint16_t col,
+                                                            uint16_t total_iterations)
 {
     if (!chain || !candidate) return OP_NULL_PTR;
     if (chain->index == 0) return OP_INVALID_STATE;
     if (chain->index >= 100) return OP_INVALID_INPUT;
+    if (total_iterations != MINI_POW_MATRIX_N) return OP_INVALID_INPUT;
+    if (row >= MINI_POW_MATRIX_N || col >= MINI_POW_MATRIX_N) return OP_INVALID_INPUT;
     return verify_prev_block(chain);
 }
 
 PKCERTCHAIN_INLINE OpStatus_t validate_before_solve_mini_pow(const mini_pow_session_t *session)
 {
     if (!session) return OP_NULL_PTR;
-    if (session->challenge.complexity == 0) return OP_INVALID_INPUT;
+    if (session->challenge.matrix_n != MINI_POW_MATRIX_N) return OP_INVALID_INPUT;
     if (session->challenge.challenge_id == 0) return OP_INVALID_INPUT;
     return OP_SUCCESS;
 }
@@ -131,6 +137,9 @@ PKCERTCHAIN_INLINE OpStatus_t validate_before_verify_mini_pow(const mini_pow_ses
 {
     if (!session || !solve) return OP_NULL_PTR;
     if (solve->challenge_id != session->challenge.challenge_id) return OP_INVALID_INPUT;
+    if (solve->row != session->challenge.row || solve->col != session->challenge.col) return OP_INVALID_INPUT;
+    if (solve->iteration != session->challenge.iteration ||
+        solve->total_iterations != session->challenge.total_iterations) return OP_INVALID_INPUT;
     if (received_time_seconds < session->issued_time_seconds) return OP_INVALID_INPUT;
     return OP_SUCCESS;
 }
@@ -190,24 +199,27 @@ PKCERTCHAIN_INLINE OpStatus_t validate_before_add_block(const PKCertChain *chain
  */
 PKCERTCHAIN_INLINE OpStatus_t give_mini_pow_challenge(const PKCertChain *chain,
                                                       const block *candidate,
-                                                      uint8_t complexity,
+                                                      uint16_t row,
+                                                      uint16_t col,
+                                                      uint16_t iteration,
+                                                      uint16_t total_iterations,
                                                       uint64_t challenge_id,
                                                       uint64_t issued_time_seconds,
                                                       mini_pow_session_t *out_session)
 {
     if (!chain || !candidate || !out_session) return OP_NULL_PTR;
 
-    OpStatus_t pre = validate_before_send_mini_pow(chain, candidate);
+    OpStatus_t pre = validate_before_send_mini_pow(chain, candidate, row, col, total_iterations);
     if (pre != OP_SUCCESS) return pre;
 
     OpStatus_t st = verify_prev_block(chain);
     if (st != OP_SUCCESS) return st;
 
     mini_pow_challenge_init(&out_session->challenge);
-    st = generate_mini_pow_Challenge((block *)candidate, complexity, &out_session->challenge);
+    st = generate_mini_pow_Challenge((block *)candidate, row, col, iteration,
+                                     total_iterations, challenge_id, &out_session->challenge);
     if (st != OP_SUCCESS) return st;
 
-    out_session->challenge.challenge_id = challenge_id;
     out_session->issued_time_seconds = issued_time_seconds;
     out_session->received_time_seconds = 0;
     out_session->target_index = chain->index;
@@ -247,7 +259,11 @@ PKCERTCHAIN_INLINE OpStatus_t give_mini_pow_challenge_auto(PKCertChain *chain,
 {
     if (!chain) return OP_NULL_PTR;
     uint64_t challenge_id = generate_challenge_id(chain);
-    return give_mini_pow_challenge(chain, candidate, chain->complexity, challenge_id,
+    uint16_t iteration = (uint16_t)(challenge_id % MINI_POW_MATRIX_N);
+    uint16_t row = iteration;
+    uint16_t col = (uint16_t)((challenge_id * 7u) % MINI_POW_MATRIX_N);
+    return give_mini_pow_challenge(chain, candidate, row, col, iteration,
+                                   MINI_POW_MATRIX_N, challenge_id,
                                    issued_time_seconds, out_session);
 }
 
@@ -314,18 +330,6 @@ PKCERTCHAIN_INLINE uint8_t update_complexity(uint8_t current, uint64_t elapsed_s
     return clamp_complexity((int)floor(new_complexity));
 }
 
-PKCERTCHAIN_INLINE Tier_t classify_tier(double avg_seconds, uint64_t elapsed_seconds)
-{
-    if (avg_seconds <= 0.0) return TIER_INVALID;
-    double elapsed = (double)elapsed_seconds;
-
-    if (elapsed <= 0.25 * avg_seconds) return TIER_SERVER;
-    if (elapsed <= 0.60 * avg_seconds) return TIER_DESKTOP;
-    if (elapsed <= 1.50 * avg_seconds) return TIER_EDGE;
-    if (elapsed <= 3.00 * avg_seconds) return TIER_MCU;
-    return TIER_INVALID;
-}
-
 PKCERTCHAIN_INLINE double update_avg_solve_time(double prev_avg, uint64_t elapsed_seconds)
 {
     const double alpha = 0.2;
@@ -349,7 +353,7 @@ PKCERTCHAIN_INLINE uint8_t tier_to_complexity(Tier_t tier, uint8_t base_complexi
 PKCERTCHAIN_INLINE Tier_t classify_tier_for_elapsed(const PKCertChain *chain, uint64_t elapsed_seconds)
 {
     if (!chain) return TIER_INVALID;
-    return classify_tier(chain->avg_solve_time_seconds, elapsed_seconds);
+    return mini_pow_assign_tier(chain->avg_solve_time_seconds, elapsed_seconds);
 }
 
 PKCERTCHAIN_INLINE OpStatus_t add_block_if_pow(const PKCertChain *chain,
@@ -373,7 +377,7 @@ PKCERTCHAIN_INLINE OpStatus_t add_block_if_pow(const PKCertChain *chain,
     block_copy(&out_chain->blocks[out_chain->index], candidate);
     out_chain->avg_solve_time_seconds = update_avg_solve_time(out_chain->avg_solve_time_seconds, elapsed_seconds);
     block_set_tier(&out_chain->blocks[out_chain->index],
-                   classify_tier(out_chain->avg_solve_time_seconds, elapsed_seconds));
+                   mini_pow_assign_tier(out_chain->avg_solve_time_seconds, elapsed_seconds));
     out_chain->index += 1;
     out_chain->complexity = update_complexity(out_chain->complexity, elapsed_seconds);
     return OP_SUCCESS;
@@ -464,7 +468,11 @@ PKCERTCHAIN_INLINE OpStatus_t add_block_tiered_pow(PKCertChain *chain,
 
     // Step 1: classification challenge
     mini_pow_session_t classify_session;
-    st = give_mini_pow_challenge(chain, candidate, chain->complexity,
+    st = give_mini_pow_challenge(chain, candidate,
+                                 solve_classify->row,
+                                 solve_classify->col,
+                                 solve_classify->iteration,
+                                 solve_classify->total_iterations,
                                  solve_classify->challenge_id,
                                  classify_issued_time, &classify_session);
     if (st != OP_SUCCESS) return st;
