@@ -10,7 +10,7 @@
 #include "datatype/OpStatus.h"
 #include "blockchain/block.h"
 #include "datatype/uint256_t.h"
-#include "util/utilities.h"
+#include "util/SignUtils.h"
 #include "util/To_BO_Def_Primitives.h"
 #include "util/Size_Offsets.h"
 #include "datatype/OpStatus.h"
@@ -97,7 +97,7 @@ MINI_POW_CHALLENGE_INLINE OpStatus_t mini_pow_challenge_deserialize(const uint8_
 /*
  * generate_Challenge:
  *  - Computes SHA256 hash over the block struct
- *  - Uses HASH256_OF from utilities.h (zero-copy)
+ *  - Uses hash256_buffer from SignUtils (zero-copy)
  *  - Returns mini_pow_challenge_t with challenge and specified complexity
  */
 MINI_POW_CHALLENGE_INLINE OpStatus_t generate_mini_pow_Challenge(block* block, uint8_t complexity, mini_pow_challenge_t* pow)

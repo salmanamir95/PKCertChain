@@ -9,7 +9,7 @@
 #include <string.h>
 #include "miniPoWChallenge.h"
 #include "datatype/uint256_t.h"
-#include "util/utilities.h"
+#include "util/SignUtils.h"
 #include "util/To_BO_Def_Primitives.h"
 #include "util/Size_Offsets.h"
 #include "datatype/OpStatus.h"

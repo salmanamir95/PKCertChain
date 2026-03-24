@@ -11,6 +11,7 @@
 #define MINI_POW_VERIFY_INLINE static inline __attribute__((always_inline))
 #include "Proofs/MiniPoW/miniPoWChallenge.h"
 #include "Proofs/MiniPoW/miniPoWSolve.h"
+#include "util/SignUtils.h"
 #include "util/To_BO_Def_Primitives.h"
 #include "datatype/OpStatus.h"
 
