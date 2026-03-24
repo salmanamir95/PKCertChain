@@ -10,6 +10,7 @@
 #include "datatype/uint256_t.h"
 #include "datatype/uint512.h"
 #include "blockchain/certificate.h"
+#include "blockchain/Tier.h"
 #include "util/Size_Offsets.h"
 #include "util/To_BO_BE_Pimitives.h"
 #include "util/To_BO_Def_Primitives.h"
@@ -33,6 +34,8 @@ typedef struct __attribute__((aligned(4)))
     uint512 SignedByVerifier; // 64 bytes signature
     uint64_t height; //8
     uint64_t timestamp;   // 8 monotonic time, canonical 64-bit
+    Tier_t tier; // 1 byte
+    uint8_t reserved[3]; // padding
 } block;
 
 BLOCK_INLINE void block_init(block *blk)
@@ -43,6 +46,8 @@ BLOCK_INLINE void block_init(block *blk)
     uint512_zero(&blk->SignedByVerifier);
     blk->height = 0;
     blk->timestamp = 0;
+    blk->tier = TIER_INVALID;
+    memset(blk->reserved, 0, sizeof(blk->reserved));
 }
 
 BLOCK_INLINE const certificate *block_get_cert_ptr(const block *blk)
@@ -75,6 +80,11 @@ BLOCK_INLINE const uint64_t *block_get_height(const block *blk)
     return &blk->height;
 }
 
+BLOCK_INLINE const Tier_t *block_get_tier(const block *blk)
+{
+    return &blk->tier;
+}
+
 BLOCK_INLINE void block_set_cert(block *blk, const certificate *cert)
 {
     cert_copy(&blk->cert, cert);
@@ -105,6 +115,11 @@ BLOCK_INLINE void block_set_height(block *blk, uint64_t height)
     blk->height = height;
 }
 
+BLOCK_INLINE void block_set_tier(block *blk, Tier_t tier)
+{
+    blk->tier = tier;
+}
+
 BLOCK_INLINE void block_copy(block *dst, const block *src)
 {
     cert_copy(&dst->cert, &src->cert);
@@ -113,6 +128,8 @@ BLOCK_INLINE void block_copy(block *dst, const block *src)
     uint512_copy(&dst->SignedByVerifier, &src->SignedByVerifier);
     dst->height = src->height;
     dst->timestamp = src->timestamp;
+    dst->tier = src->tier;
+    memcpy(dst->reserved, src->reserved, sizeof(dst->reserved));
 }
 
 BLOCK_INLINE OpStatus_t block_serialize(const block *blk, uint8_t *out, size_t out_size)
@@ -126,6 +143,9 @@ BLOCK_INLINE OpStatus_t block_serialize(const block *blk, uint8_t *out, size_t o
     if (uint512_serialize_be(&blk->SignedByVerifier, out + CERT_SIZE + 2 * UINT256_SIZE, UINT512_SIZE) != OP_SUCCESS) return OP_INVALID_INPUT;
     serialize_u64_be(blk->height, out + CERT_SIZE + 2 * UINT256_SIZE + UINT512_SIZE);
     serialize_u64_be(blk->timestamp, out + CERT_SIZE + 2 * UINT256_SIZE + UINT512_SIZE + UINT64_SIZE);
+    serialize_u8(blk->tier, out + CERT_SIZE + 2 * UINT256_SIZE + UINT512_SIZE + 2 * UINT64_SIZE);
+    memcpy(out + CERT_SIZE + 2 * UINT256_SIZE + UINT512_SIZE + 2 * UINT64_SIZE + 1,
+           blk->reserved, sizeof(blk->reserved));
     return OP_SUCCESS;
 }
 
@@ -140,6 +160,10 @@ BLOCK_INLINE OpStatus_t block_deserialize(const uint8_t *in, size_t in_size, blo
     if (uint512_deserialize_be(in + CERT_SIZE + 2 * UINT256_SIZE, UINT512_SIZE, &blk->SignedByVerifier) != OP_SUCCESS) return OP_INVALID_INPUT;
     deserialize_u64_be(in + CERT_SIZE + 2 * UINT256_SIZE + UINT512_SIZE, &blk->height, sizeof(uint64_t));
     deserialize_u64_be(in + CERT_SIZE + 2 * UINT256_SIZE + UINT512_SIZE + UINT64_SIZE, &blk->timestamp, sizeof(uint64_t));
+    deserialize_u8_def(in + CERT_SIZE + 2 * UINT256_SIZE + UINT512_SIZE + 2 * UINT64_SIZE, &blk->tier, sizeof(uint8_t));
+    memcpy(blk->reserved,
+           in + CERT_SIZE + 2 * UINT256_SIZE + UINT512_SIZE + 2 * UINT64_SIZE + 1,
+           sizeof(blk->reserved));
     return OP_SUCCESS;
 }
 
