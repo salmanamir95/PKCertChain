@@ -113,21 +113,21 @@ PKCERTCHAIN_INLINE OpStatus_t validate_before_send_mini_pow(const PKCertChain *c
                                                             const block *candidate,
                                                             uint16_t row,
                                                             uint16_t col,
-                                                            uint16_t total_iterations)
+                                                            uint16_t iteration)
 {
     if (!chain || !candidate) return OP_NULL_PTR;
     if (chain->index == 0) return OP_INVALID_STATE;
     if (chain->index >= 100) return OP_INVALID_INPUT;
-    if (total_iterations != MINI_POW_MATRIX_N) return OP_INVALID_INPUT;
     if (row >= MINI_POW_MATRIX_N || col >= MINI_POW_MATRIX_N) return OP_INVALID_INPUT;
+    if (iteration >= MINI_POW_MATRIX_N) return OP_INVALID_INPUT;
     return verify_prev_block(chain);
 }
 
 PKCERTCHAIN_INLINE OpStatus_t validate_before_solve_mini_pow(const mini_pow_session_t *session)
 {
     if (!session) return OP_NULL_PTR;
-    if (session->challenge.matrix_n != MINI_POW_MATRIX_N) return OP_INVALID_INPUT;
     if (session->challenge.challenge_id == 0) return OP_INVALID_INPUT;
+    if (session->challenge.iteration >= MINI_POW_MATRIX_N) return OP_INVALID_INPUT;
     return OP_SUCCESS;
 }
 
@@ -138,8 +138,8 @@ PKCERTCHAIN_INLINE OpStatus_t validate_before_verify_mini_pow(const mini_pow_ses
     if (!session || !solve) return OP_NULL_PTR;
     if (solve->challenge_id != session->challenge.challenge_id) return OP_INVALID_INPUT;
     if (solve->row != session->challenge.row || solve->col != session->challenge.col) return OP_INVALID_INPUT;
-    if (solve->iteration != session->challenge.iteration ||
-        solve->total_iterations != session->challenge.total_iterations) return OP_INVALID_INPUT;
+    if (solve->iteration != session->challenge.iteration) return OP_INVALID_INPUT;
+    if (solve->iteration >= MINI_POW_MATRIX_N) return OP_INVALID_INPUT;
     if (received_time_seconds < session->issued_time_seconds) return OP_INVALID_INPUT;
     return OP_SUCCESS;
 }
@@ -202,27 +202,27 @@ PKCERTCHAIN_INLINE OpStatus_t give_mini_pow_challenge(const PKCertChain *chain,
                                                       uint16_t row,
                                                       uint16_t col,
                                                       uint16_t iteration,
-                                                      uint16_t total_iterations,
                                                       uint64_t challenge_id,
                                                       uint64_t issued_time_seconds,
                                                       mini_pow_session_t *out_session)
 {
     if (!chain || !candidate || !out_session) return OP_NULL_PTR;
 
-    OpStatus_t pre = validate_before_send_mini_pow(chain, candidate, row, col, total_iterations);
+    OpStatus_t pre = validate_before_send_mini_pow(chain, candidate, row, col, iteration);
     if (pre != OP_SUCCESS) return pre;
 
     OpStatus_t st = verify_prev_block(chain);
     if (st != OP_SUCCESS) return st;
 
     mini_pow_challenge_init(&out_session->challenge);
-    st = generate_mini_pow_Challenge((block *)candidate, row, col, iteration,
-                                     total_iterations, challenge_id, &out_session->challenge);
+    st = generate_mini_pow_Challenge(challenge_id, row, col, iteration, &out_session->challenge);
     if (st != OP_SUCCESS) return st;
 
     out_session->issued_time_seconds = issued_time_seconds;
     out_session->received_time_seconds = 0;
     out_session->target_index = chain->index;
+    out_session->total_elapsed_ms = 0;
+    out_session->iterations_done = 0;
     return OP_SUCCESS;
 }
 
@@ -260,11 +260,11 @@ PKCERTCHAIN_INLINE OpStatus_t give_mini_pow_challenge_auto(PKCertChain *chain,
     if (!chain) return OP_NULL_PTR;
     uint64_t challenge_id = generate_challenge_id(chain);
     uint16_t iteration = (uint16_t)(challenge_id % MINI_POW_MATRIX_N);
-    uint16_t row = iteration;
-    uint16_t col = (uint16_t)((challenge_id * 7u) % MINI_POW_MATRIX_N);
+    uint16_t row = 0;
+    uint16_t col = 0;
+    mini_pow_select_row_col(challenge_id, &row, &col);
     return give_mini_pow_challenge(chain, candidate, row, col, iteration,
-                                   MINI_POW_MATRIX_N, challenge_id,
-                                   issued_time_seconds, out_session);
+                                   challenge_id, issued_time_seconds, out_session);
 }
 
 /*
@@ -472,7 +472,6 @@ PKCERTCHAIN_INLINE OpStatus_t add_block_tiered_pow(PKCertChain *chain,
                                  solve_classify->row,
                                  solve_classify->col,
                                  solve_classify->iteration,
-                                 solve_classify->total_iterations,
                                  solve_classify->challenge_id,
                                  classify_issued_time, &classify_session);
     if (st != OP_SUCCESS) return st;

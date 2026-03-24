@@ -8,6 +8,16 @@
 
 #define MINI_POW_MATRIX_N 1000
 
+static inline void mini_pow_select_row_col(uint64_t challenge_id, uint16_t *row, uint16_t *col)
+{
+    if (!row || !col) return;
+    uint32_t n = MINI_POW_MATRIX_N;
+    uint32_t r = (uint32_t)((challenge_id * 2654435761u) % n);
+    uint32_t c = (uint32_t)(((challenge_id * 1597334677u) + 7u) % n);
+    *row = (uint16_t)r;
+    *col = (uint16_t)c;
+}
+
 static inline Tier_t mini_pow_assign_tier(double avg_seconds, uint64_t elapsed_seconds)
 {
     if (avg_seconds <= 0.0) return TIER_INVALID;

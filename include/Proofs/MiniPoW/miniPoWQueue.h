@@ -20,6 +20,8 @@ typedef struct __attribute__((aligned(4))) {
     bool used;
     mini_pow_session_t session;
     block candidate;
+    uint64_t total_elapsed_ms;
+    uint16_t iterations_done;
 } mini_pow_queue_entry_t;
 
 typedef struct __attribute__((aligned(4))) {
@@ -45,6 +47,8 @@ static inline OpStatus_t mini_pow_queue_add(mini_pow_queue_t *q,
             q->entries[i].used = true;
             q->entries[i].session = *session;
             block_copy(&q->entries[i].candidate, candidate);
+            q->entries[i].total_elapsed_ms = 0;
+            q->entries[i].iterations_done = 0;
             q->count++;
             return OP_SUCCESS;
         }
@@ -91,6 +95,30 @@ static inline void mini_pow_queue_prune_by_index(mini_pow_queue_t *q, uint32_t t
             if (q->count > 0) q->count--;
         }
     }
+}
+
+static inline OpStatus_t mini_pow_queue_record_timing(mini_pow_queue_t *q,
+                                                      uint64_t challenge_id,
+                                                      uint64_t elapsed_ms,
+                                                      double *out_avg_ms)
+{
+    if (!q) return OP_NULL_PTR;
+    for (size_t i = 0; i < MINI_POW_QUEUE_MAX; ++i) {
+        if (q->entries[i].used && q->entries[i].session.challenge.challenge_id == challenge_id) {
+            q->entries[i].total_elapsed_ms += elapsed_ms;
+            if (q->entries[i].iterations_done < MINI_POW_MATRIX_N) {
+                q->entries[i].iterations_done += 1;
+            }
+            if (out_avg_ms) {
+                uint16_t done = q->entries[i].iterations_done;
+                if (done > 0) {
+                    *out_avg_ms = (double)q->entries[i].total_elapsed_ms / (double)done;
+                }
+            }
+            return OP_SUCCESS;
+        }
+    }
+    return OP_INVALID_INPUT;
 }
 
 #endif // MINI_POW_QUEUE_H
