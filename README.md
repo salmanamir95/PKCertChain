@@ -8,7 +8,7 @@ PKCertChain is a Linux-focused blockchain prototype emphasizing deterministic se
 - PoW session queue for outstanding challenges implemented.
 - Ed25519 signing + verification helpers implemented.
 - X25519 key generation and AES-256-GCM local key storage implemented.
-- Wallet path: `~/.pkcertchain/wallet` with strict permissions.
+- Wallet path: `~/.pkcertchain/<network>/wallet` with strict permissions.
 
 ## Key Components
 - **Blockchain types:** `include/blockchain/`

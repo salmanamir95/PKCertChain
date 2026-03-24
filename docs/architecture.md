@@ -104,7 +104,7 @@ typedef struct __attribute__((aligned(4))) {
   - Key derivation: `SHA256(password || salt)`
 
 **Wallet Directory:**
-- `~/.pkcertchain/wallet` created with mode `0700`.
+- `~/.pkcertchain/<network>/wallet` created with mode `0700`.
 - Key files saved as encrypted blobs with mode `0600`.
 - `LinuxUtils` provides `save_*` and `load_*` helpers.
 

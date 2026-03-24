@@ -16,23 +16,24 @@
 #define UTIL_INLINE static inline __attribute__((always_inline))
 #endif
 
-#define PKCERTCHAIN_WALLET_SUBDIR ".pkcertchain/wallet"
 #define PKCERTCHAIN_BASE_SUBDIR   ".pkcertchain"
 
 /*
- * Check whether ~/.pkcertchain/wallet exists.
+ * Check whether ~/.pkcertchain/<network>/wallet exists.
  *
  * Returns:
  *   - true  if setup is needed (missing path)
  *   - false if path exists
  */
-UTIL_INLINE bool need_pkcertchain_setup(void)
+UTIL_INLINE bool need_pkcertchain_setup(const char *network_name)
 {
+    if (!network_name || network_name[0] == '\0') return true;
     const char *home = getenv("HOME");
     if (!home || home[0] == '\0') return true;
 
     char path[512];
-    if (snprintf(path, sizeof(path), "%s/%s", home, PKCERTCHAIN_WALLET_SUBDIR) <= 0) return true;
+    if (snprintf(path, sizeof(path), "%s/%s/%s/wallet", home, PKCERTCHAIN_BASE_SUBDIR, network_name) <= 0)
+        return true;
 
     struct stat st;
     if (stat(path, &st) != 0) return true;
@@ -42,30 +43,42 @@ UTIL_INLINE bool need_pkcertchain_setup(void)
 }
 
 /*
- * Create ~/.pkcertchain/wallet with mode 700 (non-interactive).
+ * Create ~/.pkcertchain/<network>/wallet with mode 700 (non-interactive).
  *
  * Returns:
  *   - OP_SUCCESS on success
  *   - OP_NEEDS_PRIVILEGE if permission is denied
  *   - OP_INVALID_INPUT on failure
  */
-UTIL_INLINE OpStatus_t create_wallet(void)
+UTIL_INLINE OpStatus_t create_wallet(const char *network_name)
 {
+    if (!network_name || network_name[0] == '\0') return OP_INVALID_INPUT;
     const char *home = getenv("HOME");
     if (!home || home[0] == '\0') return OP_INVALID_INPUT;
 
     char base_path[512];
     char wallet_path[512];
-    if (snprintf(base_path, sizeof(base_path), "%s/%s", home, PKCERTCHAIN_BASE_SUBDIR) <= 0) return OP_INVALID_INPUT;
-    if (snprintf(wallet_path, sizeof(wallet_path), "%s/%s", home, PKCERTCHAIN_WALLET_SUBDIR) <= 0) return OP_INVALID_INPUT;
+    if (snprintf(base_path, sizeof(base_path), "%s/%s/%s", home, PKCERTCHAIN_BASE_SUBDIR, network_name) <= 0)
+        return OP_INVALID_INPUT;
+    if (snprintf(wallet_path, sizeof(wallet_path), "%s/%s/%s/wallet", home, PKCERTCHAIN_BASE_SUBDIR, network_name) <= 0)
+        return OP_INVALID_INPUT;
 
-    // Create ~/.pkcertchain if needed
+    // Ensure ~/.pkcertchain exists
+    char root_path[512];
+    if (snprintf(root_path, sizeof(root_path), "%s/%s", home, PKCERTCHAIN_BASE_SUBDIR) <= 0)
+        return OP_INVALID_INPUT;
+    if (mkdir(root_path, 0700) != 0 && errno != EEXIST) {
+        if (errno == EACCES || errno == EPERM) return OP_NEEDS_PRIVILEGE;
+        return OP_INVALID_INPUT;
+    }
+
+    // Create ~/.pkcertchain/<network> if needed
     if (mkdir(base_path, 0700) != 0 && errno != EEXIST) {
         if (errno == EACCES || errno == EPERM) return OP_NEEDS_PRIVILEGE;
         return OP_INVALID_INPUT;
     }
 
-    // Create ~/.pkcertchain/wallet if needed
+    // Create ~/.pkcertchain/<network>/wallet if needed
     if (mkdir(wallet_path, 0700) != 0 && errno != EEXIST) {
         if (errno == EACCES || errno == EPERM) return OP_NEEDS_PRIVILEGE;
         return OP_INVALID_INPUT;
@@ -88,10 +101,10 @@ UTIL_INLINE OpStatus_t create_wallet(void)
  *   - OP_NEEDS_PRIVILEGE if permission denied
  *   - OP_INVALID_INPUT on other failures
  */
-UTIL_INLINE OpStatus_t ensure_wallet_dir(void)
+UTIL_INLINE OpStatus_t ensure_wallet_dir(const char *network_name)
 {
-    if (!need_pkcertchain_setup()) return OP_SUCCESS;
-    return create_wallet();
+    if (!need_pkcertchain_setup(network_name)) return OP_SUCCESS;
+    return create_wallet(network_name);
 }
 
 #endif // WALLETSETUP_H

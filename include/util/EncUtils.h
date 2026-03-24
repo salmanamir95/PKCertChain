@@ -35,11 +35,11 @@
  *   - out_priv: 32-byte private key
  *   - out_pub: 32-byte public key
  */
-UTIL_INLINE OpStatus_t GenerateEncKeys(uint256 *out_priv, uint256 *out_pub)
+UTIL_INLINE OpStatus_t GenerateEncKeys(uint256 *out_priv, uint256 *out_pub, const char *network_name)
 {
     if (!out_priv || !out_pub) return OP_NULL_PTR;
-    if (need_pkcertchain_setup()) {
-        OpStatus_t st = create_wallet();
+    if (need_pkcertchain_setup(network_name)) {
+        OpStatus_t st = create_wallet(network_name);
         if (st != OP_SUCCESS) return st;
     }
     uint256_zero(out_priv);

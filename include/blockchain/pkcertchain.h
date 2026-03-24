@@ -42,8 +42,8 @@ PKCERTCHAIN_INLINE OpStatus_t Gensis_Block(PKCertChain *chain)
     uint256 enc_priv;
     uint256 enc_pub;
 
-    if (GenerateSignKeys(&sign_priv, &sign_pub) != OP_SUCCESS) return OP_INVALID_INPUT;
-    if (GenerateEncKeys(&enc_priv, &enc_pub) != OP_SUCCESS) return OP_INVALID_INPUT;
+    if (GenerateSignKeys(&sign_priv, &sign_pub, chain->NetworkName) != OP_SUCCESS) return OP_INVALID_INPUT;
+    if (GenerateEncKeys(&enc_priv, &enc_pub, chain->NetworkName) != OP_SUCCESS) return OP_INVALID_INPUT;
 
     certificate cert;
     cert_init(&cert);

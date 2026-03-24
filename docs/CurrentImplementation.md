@@ -67,7 +67,7 @@
 
 ### 5. Wallet & OS Helpers
 - **WalletSetup (`util/WalletSetup.h`)**
-  - Creates `~/.pkcertchain/wallet` with mode `0700`.
+  - Creates `~/.pkcertchain/<network>/wallet` with mode `0700`.
   - Returns `OP_NEEDS_PRIVILEGE` if permissions block creation.
 - **LinuxUtils (`util/LinuxUtils.h`)**
   - Save encrypted keypairs with `0600` permissions:
