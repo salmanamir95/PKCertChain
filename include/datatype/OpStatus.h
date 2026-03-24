@@ -16,6 +16,7 @@ typedef uint8_t OpStatus_t;
 #define OP_NEEDS_PRIVILEGE 4
 #define OP_SIGN_VERIFIED_FALSE 5
 #define OP_SIGN_VERIFIED_TRUE  6
+#define OP_INVALID_STATE 7
 
 
 #endif // OP_STATUS_H
