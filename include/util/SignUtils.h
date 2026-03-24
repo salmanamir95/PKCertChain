@@ -14,7 +14,7 @@
 #include "datatype/uint512.h"
 #include "datatype/OpStatus.h"
 #include "util/Size_Offsets.h"
-#include "util/LinuxUtils.h"
+#include "util/WalletSetup.h"
 
 #ifndef UTIL_INLINE
 #define UTIL_INLINE static inline __attribute__((always_inline))
@@ -102,6 +102,84 @@ UTIL_INLINE OpStatus_t sign_buffer_ed25519(const uint8_t *in, size_t in_len, con
     EVP_MD_CTX_free(mdctx);
     EVP_PKEY_free(pkey);
     return OP_SUCCESS;
+}
+
+/*
+ * Verify a raw buffer using Ed25519.
+ *
+ * Input:
+ *   - in: pointer to bytes
+ *   - in_len: length of the buffer
+ *   - pub_key: pointer to uint256 public key (32 bytes)
+ *   - sig: pointer to uint512 signature (64 bytes)
+ *
+ * Returns:
+ *   - true  if signature is valid
+ *   - false otherwise
+ */
+UTIL_INLINE bool verify_buffer_ed25519(const uint8_t *in, size_t in_len, const uint256 *pub_key, const uint512 *sig)
+{
+    if (!in || !pub_key || !sig) return false;
+
+    uint8_t key_buf[UINT256_SIZE];
+    if (uint256_serialize_be(pub_key, key_buf, sizeof(key_buf)) != OP_SUCCESS) return false;
+
+    EVP_PKEY *pkey = EVP_PKEY_new_raw_public_key(EVP_PKEY_ED25519, NULL, key_buf, sizeof(key_buf));
+    if (!pkey) return false;
+
+    EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
+    if (!mdctx) {
+        EVP_PKEY_free(pkey);
+        return false;
+    }
+
+    int ok = 0;
+    if (EVP_DigestVerifyInit(mdctx, NULL, NULL, NULL, pkey) == 1) {
+        ok = EVP_DigestVerify(mdctx, (const unsigned char *)sig->w, UINT512_SIZE, in, in_len);
+    }
+
+    EVP_MD_CTX_free(mdctx);
+    EVP_PKEY_free(pkey);
+
+    return ok == 1;
+}
+
+/*
+ * Verify a raw buffer using Ed25519 (OpStatus form).
+ *
+ * Returns:
+ *   - OP_SIGN_VERIFIED_TRUE  if signature is valid
+ *   - OP_SIGN_VERIFIED_FALSE if signature is invalid
+ *   - OP_NULL_PTR / OP_INVALID_INPUT on errors
+ */
+UTIL_INLINE OpStatus_t verify_buffer_ed25519_status(const uint8_t *in,
+                                                    size_t in_len,
+                                                    const uint256 *pub_key,
+                                                    const uint512 *sig)
+{
+    if (!in || !pub_key || !sig) return OP_NULL_PTR;
+
+    uint8_t key_buf[UINT256_SIZE];
+    if (uint256_serialize_be(pub_key, key_buf, sizeof(key_buf)) != OP_SUCCESS) return OP_INVALID_INPUT;
+
+    EVP_PKEY *pkey = EVP_PKEY_new_raw_public_key(EVP_PKEY_ED25519, NULL, key_buf, sizeof(key_buf));
+    if (!pkey) return OP_INVALID_INPUT;
+
+    EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
+    if (!mdctx) {
+        EVP_PKEY_free(pkey);
+        return OP_INVALID_INPUT;
+    }
+
+    int ok = 0;
+    if (EVP_DigestVerifyInit(mdctx, NULL, NULL, NULL, pkey) == 1) {
+        ok = EVP_DigestVerify(mdctx, (const unsigned char *)sig->w, UINT512_SIZE, in, in_len);
+    }
+
+    EVP_MD_CTX_free(mdctx);
+    EVP_PKEY_free(pkey);
+
+    return (ok == 1) ? OP_SIGN_VERIFIED_TRUE : OP_SIGN_VERIFIED_FALSE;
 }
 
 /*
