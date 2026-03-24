@@ -3,7 +3,7 @@
 ## Codebase Overview
 
 ### Top-Level Layout
-- `include/`: Public headers for blockchain types, PoW, crypto utilities, and OS helpers.
+- `include/`: Public headers for blockchain types, PoW, crypto utilities, queueing, and OS helpers.
 - `src/`: Minimal entrypoint (`main.c`) currently prints a hello message.
 - `docs/`: Architecture and implementation status.
 - `tests/`: Empty (no tests yet).
@@ -33,23 +33,30 @@
   - Certificate, current cert hash, prev hash, verifier signature, height, timestamp.
   - Full serialization/deserialization (big-endian fields).
 - **`PKCertChain` (`blockchain/pkcertchain.h`)**
-  - Fixed-size array of blocks + index (placeholder chain logic).
+  - Fixed-size block array, `index`, `NetworkName`, `complexity`, and `next_challenge_id`.
+  - Genesis block builds a self-signed certificate.
 
 ### 3. MiniPoW
 - **Challenge (`Proofs/MiniPoW/miniPoWChallenge.h`)**
   - Deterministic challenge hash from serialized block fields.
-  - Complexity + challenge ID stored.
+  - `challenge_id` is now `uint64_t`.
 - **Solve (`Proofs/MiniPoW/miniPoWSolve.h`)**
   - Brute-force nonce search.
   - Complexity check via leading-zero count (`clz256`).
+  - `challenge_id` is now `uint64_t`.
 - **Verify (`Proofs/MiniPoW/miniPoWVerify.h`)**
   - `isValidChallenge` verifies nonce against challenge hash + complexity.
+- **Session (`Proofs/MiniPoW/miniPoWSession.h`)**
+  - Tracks issued/received timestamps and `target_index`.
+- **Queue (`Proofs/MiniPoW/miniPoWQueue.h`)**
+  - Fixed-size array queue for active PoW sessions + candidate blocks.
+  - `find/take` by `challenge_id` and prune by `target_index`.
 
 ### 4. Cryptography Utilities
 - **SignUtils (`util/SignUtils.h`)**
   - `hash256_buffer` (SHA256 wrapper).
   - `clz256` for difficulty checks.
-  - Ed25519 sign + verify.
+  - Ed25519 sign + verify (bool and status forms).
   - `GenerateSignKeys` (Ed25519 keypair generation).
 - **EncUtils (`util/EncUtils.h`)**
   - `GenerateEncKeys` (X25519 keypair generation).
@@ -69,10 +76,20 @@
     - `load_sign_keys`, `load_enc_keys`.
   - Uses AES-GCM encryption helpers and a user-provided password.
 
-### 6. Status & Error Handling
+### 6. Chain Flow & Difficulty Update
+- **Decoupled flow:**
+  - `verify_prev_block` -> `give_mini_pow_challenge` -> `verify_mini_pow_solution` -> `add_block_if_pow`.
+- **Queue helpers:**
+  - `give_mini_pow_challenge_enqueue` and `add_block_from_queue`.
+- **Difficulty update:**
+  - Uses elapsed time between challenge issue and solve.
+  - Faster than 5 min increases complexity; slower decreases.
+  - Clamped to `[1, 220]`.
+
+### 7. Status & Error Handling
 - **`OpStatus_t` (`datatype/OpStatus.h`)**
   - Standard error codes (null pointer, buffer too small, invalid input, success).
-  - Added: `OP_NEEDS_PRIVILEGE`, `OP_SIGN_VERIFIED_TRUE/FALSE`.
+  - Added: `OP_NEEDS_PRIVILEGE`, `OP_SIGN_VERIFIED_TRUE/FALSE`, `OP_INVALID_STATE`.
 
 ---
 
@@ -80,12 +97,12 @@
 
 ### 1. Blockchain Core
 - Persistent chain storage + reorg logic.
-- Signature verification and chain validation flow.
+- Full chain validation beyond prev-block checks.
 - Mempool + block assembly logic.
 - Networking / P2P transport.
 
 ### 2. Wallet UX & Integration
-- CLI/GUI glue to prompt for passwords and manage privilege escalation.
+- GUI flow to collect encryption password and call save/load helpers.
 - Key rotation and migration support.
 
 ### 3. Testing
@@ -93,7 +110,7 @@
 - Integration tests for block creation + verification.
 
 ### 4. Documentation
-- Update `architecture.md` with current crypto + wallet flow details.
+- Expand architecture for queueing + difficulty tuning.
 
 ---
 

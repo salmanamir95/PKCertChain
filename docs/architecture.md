@@ -61,10 +61,10 @@ typedef struct __attribute__((aligned(4))) {
 
 ```c
 typedef struct __attribute__((aligned(4))) {
-    uint256 challenge;   // 32 bytes
-    uint8_t complexity;  // 1 byte
-    uint8_t challenge_id;// 1 byte
-    uint8_t reserved[2]; // padding
+    uint256 challenge;    // 32 bytes
+    uint8_t complexity;   // 1 byte
+    uint64_t challenge_id;// 8 bytes
+    uint8_t reserved[3];  // padding
 } mini_pow_challenge_t;
 ```
 
@@ -72,11 +72,22 @@ typedef struct __attribute__((aligned(4))) {
 
 ```c
 typedef struct __attribute__((aligned(4))) {
-    uint64_t nonce;      // 8 bytes
-    uint8_t complexity;  // 1 byte
-    uint8_t challenge_id;// 1 byte
-    uint8_t reserved[2]; // padding
+    uint64_t nonce;       // 8 bytes
+    uint8_t complexity;   // 1 byte
+    uint64_t challenge_id;// 8 bytes
+    uint8_t reserved[3];  // padding
 } mini_pow_solve_t;
+```
+
+**MiniPoW Session (`Proofs/MiniPoW/miniPoWSession.h`):**
+
+```c
+typedef struct __attribute__((aligned(4))) {
+    mini_pow_challenge_t challenge;
+    uint64_t issued_time_seconds;
+    uint64_t received_time_seconds;
+    uint32_t target_index;
+} mini_pow_session_t;
 ```
 
 ---
@@ -99,7 +110,27 @@ typedef struct __attribute__((aligned(4))) {
 
 ---
 
-## 5. Node Heterogeneity (Design)
+## 5. PoW Flow & Queueing
+
+**Decoupled flow:**
+1. `verify_prev_block`
+2. `give_mini_pow_challenge` (creates `mini_pow_session_t`)
+3. `verify_mini_pow_solution`
+4. `add_block_if_pow`
+
+**Queueing:**
+- `mini_pow_queue_t` stores active sessions + candidate blocks.
+- `give_mini_pow_challenge_enqueue` adds sessions to the queue.
+- `add_block_from_queue` pops by `challenge_id` and prunes stale sessions.
+
+**Difficulty update:**
+- Uses elapsed time between issue and solve.
+- Faster than 5 min increases complexity; slower decreases.
+- Clamped to `[1, 220]`.
+
+---
+
+## 6. Node Heterogeneity (Design)
 
 1. **Server:** Full compute/storage, highest PoW
 2. **Desktop:** Medium PoW
@@ -110,7 +141,7 @@ typedef struct __attribute__((aligned(4))) {
 
 ---
 
-## 6. Timing
+## 7. Timing
 
 * Kernel: `CLOCK_MONOTONIC_RAW` (hard RT)
 * User-space: soft timers
@@ -118,7 +149,7 @@ typedef struct __attribute__((aligned(4))) {
 
 ---
 
-## 7. Security Principles
+## 8. Security Principles
 
 * Canonical serialization before hashing
 * Signature verification and full PoW in user-space
@@ -127,7 +158,7 @@ typedef struct __attribute__((aligned(4))) {
 
 ---
 
-## 8. Event-Driven Kernel Design (Planned)
+## 9. Event-Driven Kernel Design (Planned)
 
 **Event types:**
 
