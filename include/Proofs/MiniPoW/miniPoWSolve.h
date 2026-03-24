@@ -21,8 +21,8 @@ typedef struct __attribute__((aligned(4)))
 {
     uint64_t nonce;     // 8 bytes
     uint8_t complexity; // 1 byte
-    uint8_t challenge_id; //1 byte
-    uint8_t reserved[2];
+    uint64_t challenge_id; // 8 bytes
+    uint8_t reserved[3];
 } mini_pow_solve_t;
 
 MINI_POW_SOLVE_INLINE void mini_pow_solve_init(mini_pow_solve_t *pow)
@@ -43,7 +43,7 @@ MINI_POW_SOLVE_INLINE uint8_t mini_pow_solve_get_complexity(mini_pow_solve_t *po
     return pow->complexity;
 }
 
-MINI_POW_SOLVE_INLINE uint8_t mini_pow_solve_get_challenge_id(mini_pow_solve_t *pow)
+MINI_POW_SOLVE_INLINE uint64_t mini_pow_solve_get_challenge_id(mini_pow_solve_t *pow)
 {
     return pow->challenge_id;
 }
@@ -53,7 +53,7 @@ MINI_POW_SOLVE_INLINE void mini_pow_solve_set_nonce(mini_pow_solve_t *pow, uint6
     pow->nonce = nonce;
 }
 
-MINI_POW_SOLVE_INLINE void mini_pow_solve_set_challenge_id(mini_pow_solve_t*pow, uint8_t challenge_id){
+MINI_POW_SOLVE_INLINE void mini_pow_solve_set_challenge_id(mini_pow_solve_t*pow, uint64_t challenge_id){
     pow->challenge_id = challenge_id;
 }
 
@@ -68,8 +68,8 @@ MINI_POW_SOLVE_INLINE OpStatus_t mini_pow_solve_serialize(const mini_pow_solve_t
 
     serialize_u64_be(pow->nonce, out);
     serialize_u8(pow->complexity, out + UINT64_SIZE);
-    serialize_u8(pow->challenge_id, out + UINT64_SIZE + 1);
-    memcpy(out + UINT64_SIZE + 2, pow->reserved, sizeof(pow->reserved));
+    serialize_u64_be(pow->challenge_id, out + UINT64_SIZE + 1);
+    memcpy(out + UINT64_SIZE + 1 + UINT64_SIZE, pow->reserved, sizeof(pow->reserved));
     return OP_SUCCESS;
 }
 
@@ -80,8 +80,8 @@ MINI_POW_SOLVE_INLINE OpStatus_t mini_pow_solve_deserialize(const uint8_t *in, s
 
     deserialize_u64_be(in, &pow->nonce, sizeof(uint64_t));
     pow->complexity = in[UINT64_SIZE];
-    pow->challenge_id = in[UINT64_SIZE + 1];
-    memcpy(pow->reserved, in + UINT64_SIZE + 2, sizeof(pow->reserved));
+    deserialize_u64_be(in + UINT64_SIZE + 1, &pow->challenge_id, sizeof(uint64_t));
+    memcpy(pow->reserved, in + UINT64_SIZE + 1 + UINT64_SIZE, sizeof(pow->reserved));
     return OP_SUCCESS;
 }
 

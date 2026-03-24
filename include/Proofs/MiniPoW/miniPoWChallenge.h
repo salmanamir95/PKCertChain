@@ -29,14 +29,15 @@
 typedef struct __attribute__((aligned(4))) {
     uint256 challenge;   // 32 bytes
     uint8_t complexity;  // 1 byte
-    uint8_t challenge_id; // 1 byte
-    uint8_t reserved[2]; // padding to make 32-bit multiple
+    uint64_t challenge_id; // 8 bytes
+    uint8_t reserved[3]; // padding to make 32-bit multiple
 } mini_pow_challenge_t;
 
 
 MINI_POW_CHALLENGE_INLINE void mini_pow_challenge_init(mini_pow_challenge_t * pow){
     uint256_zero(&pow->challenge);
     pow->complexity = 0;
+    pow->challenge_id = 0;
     memset(pow->reserved, 0, sizeof(pow->reserved));
 }
 
@@ -44,7 +45,7 @@ MINI_POW_CHALLENGE_INLINE const uint256* mini_pow_challenge_get_challenge(const 
     return &pow->challenge;
 }
 
-MINI_POW_CHALLENGE_INLINE const uint8_t* mini_pow_challenge_get_challenge_id(const mini_pow_challenge_t * pow){
+MINI_POW_CHALLENGE_INLINE const uint64_t* mini_pow_challenge_get_challenge_id(const mini_pow_challenge_t * pow){
     return &pow->challenge_id;
 }
 
@@ -60,7 +61,7 @@ MINI_POW_CHALLENGE_INLINE void mini_pow_challenge_set_complexity(mini_pow_challe
     pow->complexity = complexity;
 }
 
-MINI_POW_CHALLENGE_INLINE void mini_pow_challenge_set_challenge_id(mini_pow_challenge_t * pow, uint8_t id){
+MINI_POW_CHALLENGE_INLINE void mini_pow_challenge_set_challenge_id(mini_pow_challenge_t * pow, uint64_t id){
     pow->challenge_id = id;
 }
 
@@ -77,8 +78,8 @@ MINI_POW_CHALLENGE_INLINE OpStatus_t mini_pow_challenge_serialize(const mini_pow
 
     if (uint256_serialize_be(&pow->challenge, out, UINT256_SIZE) != OP_SUCCESS) return OP_INVALID_INPUT;
     serialize_u8(pow->complexity, out + UINT256_SIZE);
-    serialize_u8(pow->challenge_id, out + UINT256_SIZE + 1);
-    memcpy(out + UINT256_SIZE + 2, pow->reserved, sizeof(pow->reserved));
+    serialize_u64_be(pow->challenge_id, out + UINT256_SIZE + 1);
+    memcpy(out + UINT256_SIZE + 1 + UINT64_SIZE, pow->reserved, sizeof(pow->reserved));
     return OP_SUCCESS;
 }
 
@@ -89,8 +90,8 @@ MINI_POW_CHALLENGE_INLINE OpStatus_t mini_pow_challenge_deserialize(const uint8_
 
     if (uint256_deserialize_be(in, UINT256_SIZE, &pow->challenge) != OP_SUCCESS) return OP_INVALID_INPUT;
     pow->complexity = in[UINT256_SIZE];
-    pow->challenge_id = in[UINT256_SIZE + 1];
-    memcpy(pow->reserved, in + UINT256_SIZE + 2, sizeof(pow->reserved));
+    deserialize_u64_be(in + UINT256_SIZE + 1, &pow->challenge_id, sizeof(uint64_t));
+    memcpy(pow->reserved, in + UINT256_SIZE + 1 + UINT64_SIZE, sizeof(pow->reserved));
     return OP_SUCCESS;
 }
 
