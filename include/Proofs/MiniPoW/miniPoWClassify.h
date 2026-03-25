@@ -2,11 +2,11 @@
 #define MINI_POW_CLASSIFY_H
 
 #include "pkcertchain_config.h"
+#include "util/Size_Offsets.h"
 
 #include <stdint.h>
 #include "blockchain/Tier.h"
 
-#define MINI_POW_MATRIX_N 1000
 
 static inline void mini_pow_select_row_col(uint64_t challenge_id, uint16_t *row, uint16_t *col)
 {
@@ -20,11 +20,11 @@ static inline void mini_pow_select_row_col(uint64_t challenge_id, uint16_t *row,
 
 static inline Tier_t mini_pow_assign_tier(uint64_t elapsed_microseconds)
 {
-    // Hardcoded thresholds based on 1000 iter matrix multiplications.
-    if (elapsed_microseconds <= 200000) return TIER_SERVER;      // <= 0.2s
-    if (elapsed_microseconds <= 1000000) return TIER_DESKTOP;    // <= 1.0s
-    if (elapsed_microseconds <= 3000000) return TIER_EDGE;       // <= 3.0s
-    return TIER_MCU;                                             // > 3.0s
+    // Hardcoded thresholds based on 50 iter matrix multiplications.
+    if (elapsed_microseconds <= 150) return TIER_SERVER;      // <= 0.15ms
+    if (elapsed_microseconds <= 500) return TIER_DESKTOP;     // <= 0.5ms
+    if (elapsed_microseconds <= 1500) return TIER_EDGE;       // <= 1.5ms
+    return TIER_MCU;                                          // > 1.5ms
 }
 
 #endif // MINI_POW_CLASSIFY_H

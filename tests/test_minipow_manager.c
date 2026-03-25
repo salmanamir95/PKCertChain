@@ -25,13 +25,17 @@ int main() {
     mini_pow_solve_t *receiverSolve = calloc(1, sizeof(mini_pow_solve_t));
     mini_pow_solve_init(receiverSolve);
     
-    // Mock matrices for testing
+    // Live matrices generation for robust testing
     mini_pow_Matrix *matrices = calloc(1, sizeof(mini_pow_Matrix));
-    for(size_t r = 0; r < MINI_POW_MATRIX_N; ++r) {
-        for(size_t c = 0; c < MINI_POW_MATRIX_N; ++c) {
-            matrices->A[r][c] = (uint16_t)((r + c) % 100);
-            matrices->B[r][c] = (uint16_t)((r * c) % 100);
-        }
+    certificate dummy_cert;
+    memset(&dummy_cert, 0, sizeof(dummy_cert));
+    uint256 dummy_hash;
+    memset(&dummy_hash, 0, sizeof(dummy_hash));
+
+    printf("Generating MiniPoW Matrices via CSPRNG...\n");
+    if(construct_mini_pow_matrices(&dummy_cert, &dummy_hash, sessionID, 12345, matrices) != OP_SUCCESS){
+        printf("Failed to generate matrices natively!\n");
+        return 1;
     }
     
     printf("Starting Session %u (Iterations: %u)\n", sessionID, MINI_POW_MATRIX_N);

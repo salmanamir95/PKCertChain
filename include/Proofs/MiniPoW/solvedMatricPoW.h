@@ -2,6 +2,7 @@
 #define SOLVED_MATRIC_POW_H
 
 #include "pkcertchain_config.h"
+#include "util/Size_Offsets.h"
 #include <stdint.h>
 #include <string.h>
 #include "Proofs/MiniPoW/miniPoWClassify.h"

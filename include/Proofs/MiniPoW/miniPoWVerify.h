@@ -2,6 +2,7 @@
 #define MINI_POW_VERIFY_H
 
 #include "pkcertchain_config.h"
+#include "util/Size_Offsets.h"
 
 #include <stdint.h>
 #include <stdbool.h>

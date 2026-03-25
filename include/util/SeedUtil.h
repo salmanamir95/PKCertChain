@@ -7,6 +7,7 @@
 #include <string.h>
 #include <openssl/rand.h>
 #include <openssl/evp.h>
+#include <openssl/hmac.h>
 
 #ifndef UTIL_INLINE
 #define UTIL_INLINE static inline __attribute__((always_inline))
@@ -50,27 +51,15 @@ UTIL_INLINE OpStatus_t mini_pow_csprng(const uint256* seed, const uint32_t* iter
     serialize_u32_be(*iteration, iterbuf); 
     uint8_t seedbuf[UINT256_SIZE];
     uint256_serialize_be(seed, seedbuf, UINT256_SIZE);
-    // Create HMAC_DRBG
-    RAND_DRBG* drbg = RAND_DRBG_new(NID_hmacWithSHA256, 0, NULL);
-    if (!drbg) return OP_INVALID_STATE;
 
-    // Instantiate DRBG with seed as entropy + iteration as personalization
-    if (!RAND_DRBG_instantiate(drbg, seedbuf, UINT256_SIZE, iterbuf, UINT32_SIZE)) {
-        RAND_DRBG_free(drbg);
+    unsigned char result[32]; // SHA256 size
+    unsigned int result_len = 0;
+    
+    if (HMAC(EVP_sha256(), seedbuf, UINT256_SIZE, iterbuf, UINT32_SIZE, result, &result_len) == NULL) {
         return OP_INVALID_STATE;
     }
 
-    // Generate 4 bytes to make uint32
-    uint32_t temp;
-    if (RAND_DRBG_bytes(drbg, (unsigned char*)&temp, sizeof(temp), 0) <= 0) {
-        RAND_DRBG_uninstantiate(drbg);
-        RAND_DRBG_free(drbg);
-        return OP_INVALID_STATE;
-    }
-
-    // Cleanup
-    RAND_DRBG_uninstantiate(drbg);
-    RAND_DRBG_free(drbg);
+    uint32_t temp = ((uint32_t)result[0] << 24) | ((uint32_t)result[1] << 16) | ((uint32_t)result[2] << 8) | result[3];
 
     // Return lower 16 bits
     *out_val = (uint16_t)(temp & 0xFFFF);
