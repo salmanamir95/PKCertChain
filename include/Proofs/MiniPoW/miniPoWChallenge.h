@@ -21,8 +21,8 @@ typedef struct __attribute__((aligned(4))) {
     uint32_t challenge_id;
     uint32_t session_id;
     uint32_t iteration;
-    uint16_t rowofA[MINI_POW_MATRIX_N];
-    uint16_t columnofB[MINI_POW_MATRIX_N];
+    uint16_t columnOfA[MINI_POW_MATRIX_N];
+    uint16_t rowOfB[MINI_POW_MATRIX_N];
 } mini_pow_challenge_t;
 
 
@@ -32,8 +32,8 @@ MINI_POW_CHALLENGE_INLINE void mini_pow_challenge_init(mini_pow_challenge_t *pow
     pow->challenge_id = 0;
     pow->session_id = 0;
     pow->iteration = 0;
-    memset(pow->rowofA, 0, sizeof(pow->rowofA));
-    memset(pow->columnofB, 0, sizeof(pow->columnofB));
+    memset(pow->columnOfA, 0, sizeof(pow->columnOfA));
+    memset(pow->rowOfB, 0, sizeof(pow->rowOfB));
 }
 
 #endif // MINI_POW_CHALLENGE_H
