@@ -1,38 +1,13 @@
 #ifndef MINI_POW_MANAGER_H
 #define MINI_POW_MANAGER_H
 
-#include <stdint.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include "Proofs/MiniPoW/miniPoWChallenge.h"
-#include "Proofs/MiniPoW/solvedMatricPoW.h"
-#include "Proofs/MiniPoW/miniPoWTracker.h"
 #include "Proofs/MiniPoW/miniPoWVerify.h"
 #include "Proofs/MiniPoW/miniPoWClassify.h"
-
-// The ACK sent by the receiver after solving an iteration (0 to 998).
-typedef struct {
-    uint32_t sessionID;
-    uint32_t challengeID;
-    bool ACK;
-} MiniPoW_ACK;
-
-// Manager Tracker for a session
-typedef struct {
-    uint32_t sessionID;
-    uint32_t currentIteration;
-    MiniPowTracker timeTracker;
-} MiniPoWManagerTracker;
-
-// The final result returned by the manager
-typedef struct {
-    uint32_t challengeid;
-    uint32_t sessionid;
-    const mini_pow_Matrix *minipowmatrix;
-    const SolvedMatricPoW *solvedmatrix;
-    Tier_t tier;
-    bool isValid;
-} mini_pow_result;
+#include "Proofs/MiniPoW/miniPoWAck.h"
+#include "Proofs/MiniPoW/miniPoWManagerTracker.h"
+#include "Proofs/MiniPoW/miniPoWResult.h"
 
 static inline void minipow_manager_tracker_init(MiniPoWManagerTracker *mgr, uint32_t session_id) {
     if (!mgr) return;
