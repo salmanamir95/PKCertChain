@@ -13,6 +13,16 @@
 #include <stdint.h>
 #include <string.h>
 #include "blockchain/block.h"
+
+typedef struct __attribute__((aligned(4))) {
+    block blocks[100]; //148
+    uint32_t index;
+    char NetworkName[64];
+    uint8_t complexity;
+    uint64_t next_challenge_id;
+    double avg_solve_time_seconds;
+} PKCertChain;
+
 #include "util/SignUtils.h"
 #include "util/EncUtils.h"
 #include "Proofs/MiniPoW/miniPoWChallenge.h"
@@ -26,15 +36,6 @@
 #include "Proofs/TierPoW/tierPoWVerify.h"
 #include "Proofs/TierPoW/tierPoWSession.h"
 #include "Proofs/TierPoW/tierPoWQueue.h"
-
-typedef struct __attribute__((aligned(4))) {
-    block blocks[100]; //148
-    uint32_t index;
-    char NetworkName[64];
-    uint8_t complexity;
-    uint64_t next_challenge_id;
-    double avg_solve_time_seconds;
-} PKCertChain;
 
 PKCERTCHAIN_INLINE OpStatus_t Gensis_Block(PKCertChain *chain)
 {

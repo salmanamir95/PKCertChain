@@ -88,8 +88,37 @@ int main() {
                 minipow_manager_receive_ack(&manager); // Log final duration
                 
                 mini_pow_result result = minipow_manager_finalize(&manager, solvedMatrix, matrices);
-                printf("\nFinal Verification result: %s\n", result.isValid ? "CORRECT" : "INCORRECT");
-                printf("Assigned Tier: %d\n", result.tier);
+                
+                printf("\n--- mini_pow_result ---\n");
+                printf("Session ID: %u\n", result.sessionid);
+                printf("Challenge ID: %u\n", result.challengeid);
+                printf("Is Valid: %s\n", result.isValid ? "true" : "false");
+                printf("Tier: %d\n", result.tier);
+
+                // printf("\nMatrix A (%dx%d):\n", MINI_POW_MATRIX_N, MINI_POW_MATRIX_N);
+                // for(size_t r=0; r<MINI_POW_MATRIX_N; ++r) {
+                //     for(size_t c=0; c<MINI_POW_MATRIX_N; ++c) {
+                //         printf("%04x ", result.minipowmatrix->A[r][c]);
+                //     }
+                //     printf("\n");
+                // }
+
+                // printf("\nMatrix B (%dx%d):\n", MINI_POW_MATRIX_N, MINI_POW_MATRIX_N);
+                // for(size_t r=0; r<MINI_POW_MATRIX_N; ++r) {
+                //     for(size_t c=0; c<MINI_POW_MATRIX_N; ++c) {
+                //         printf("%04x ", result.minipowmatrix->B[r][c]);
+                //     }
+                //     printf("\n");
+                // }
+
+                // printf("\nSolved Matrix (%dx%d):\n", MINI_POW_MATRIX_N, MINI_POW_MATRIX_N);
+                // for(size_t r=0; r<MINI_POW_MATRIX_N; ++r) {
+                //     for(size_t c=0; c<MINI_POW_MATRIX_N; ++c) {
+                //         printf("%08x ", result.solvedmatrix->Matrix[r][c]);
+                //     }
+                //     printf("\n");
+                // }
+                printf("-----------------------\n");
                 
                 free(solvedMatrix);
             }
