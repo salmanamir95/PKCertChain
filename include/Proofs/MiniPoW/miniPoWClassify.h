@@ -18,16 +18,13 @@ static inline void mini_pow_select_row_col(uint64_t challenge_id, uint16_t *row,
     *col = (uint16_t)c;
 }
 
-static inline Tier_t mini_pow_assign_tier(double avg_seconds, uint64_t elapsed_seconds)
+static inline Tier_t mini_pow_assign_tier(uint64_t elapsed_microseconds)
 {
-    if (avg_seconds <= 0.0) return TIER_INVALID;
-    double elapsed = (double)elapsed_seconds;
-
-    if (elapsed <= 0.25 * avg_seconds) return TIER_SERVER;
-    if (elapsed <= 0.60 * avg_seconds) return TIER_DESKTOP;
-    if (elapsed <= 1.50 * avg_seconds) return TIER_EDGE;
-    if (elapsed <= 3.00 * avg_seconds) return TIER_MCU;
-    return TIER_INVALID;
+    // Hardcoded thresholds based on 1000 iter matrix multiplications.
+    if (elapsed_microseconds <= 200000) return TIER_SERVER;      // <= 0.2s
+    if (elapsed_microseconds <= 1000000) return TIER_DESKTOP;    // <= 1.0s
+    if (elapsed_microseconds <= 3000000) return TIER_EDGE;       // <= 3.0s
+    return TIER_MCU;                                             // > 3.0s
 }
 
 #endif // MINI_POW_CLASSIFY_H

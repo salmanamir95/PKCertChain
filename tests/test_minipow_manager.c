@@ -6,7 +6,6 @@
 #include "Proofs/MiniPoW/miniPoWChallengeSendQueue.h"
 #include "Proofs/MiniPoW/miniPoWChallengeReceiveQueue.h"
 #include "Proofs/MiniPoW/miniPoWSolve.h"
-#include "Proofs/MiniPoW/miniPoWVerify.h"
 #include "Proofs/MiniPoW/miniPoWMatrix.h"
 
 int main() {
@@ -84,8 +83,10 @@ int main() {
                 // --- MANAGER ---
                 minipow_manager_receive_ack(&manager); // Log final duration
                 
-                bool isValid = mini_pow_verify(solvedMatrix, matrices);
-                printf("\nFinal Verification result: %s\n", isValid ? "CORRECT" : "INCORRECT");
+                mini_pow_result result = minipow_manager_finalize(&manager, solvedMatrix, matrices);
+                printf("\nFinal Verification result: %s\n", result.isValid ? "CORRECT" : "INCORRECT");
+                printf("Assigned Tier: %d\n", result.tier);
+                
                 free(solvedMatrix);
             }
         } else {
