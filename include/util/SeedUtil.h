@@ -18,29 +18,26 @@ UTIL_INLINE OpStatus_t mini_pow_seed_gen(const certificate *new_cert, const uint
     if (!new_cert || !lastBlockHash || !sessionId || !challengeID || !seed)
         return OP_INVALID_INPUT;
 
-    uint8_t *buf = new uint8_t[CERT_SIZE + UINT256_SIZE + UINT32_SIZE + UINT32_SIZE];
+    uint8_t *buf = (uint8_t *)malloc(CERT_SIZE + UINT256_SIZE + UINT32_SIZE + UINT32_SIZE);
+    if (!buf) return OP_INVALID_STATE;
+
     OpStatus_t status = cert_serialize(new_cert, buf, CERT_SIZE);
     if (status != OP_SUCCESS)
     {
-        delete[] buf;
+        free(buf);
         return status;
     }
     status = uint256_serialize_be(lastBlockHash, buf + CERT_SIZE, UINT256_SIZE);
     if (status != OP_SUCCESS)
     {
-        delete[] buf;
+        free(buf);
         return status;
     }
     serialize_u32_be(*sessionId, buf + CERT_SIZE + UINT256_SIZE);
     serialize_u32_be(*challengeID, buf + CERT_SIZE + UINT256_SIZE + UINT32_SIZE);
 
     hash256_buffer(buf, CERT_SIZE + UINT256_SIZE + UINT32_SIZE + UINT32_SIZE, seed);
-    if (!seed)
-    {
-        delete[] buf;
-        return OP_INVALID_STATE;
-    }
-    delete[] buf;
+    free(buf);
     return OP_SUCCESS;
 }
 
@@ -50,7 +47,7 @@ UTIL_INLINE OpStatus_t mini_pow_csprng(const uint256* seed, const uint32_t* iter
     if (!seed || !iteration || !out_val) return OP_INVALID_INPUT;
 
     uint8_t iterbuf[UINT32_SIZE];
-    serialize_u32_be(*iteration, iterbuf);  // iteration as personalization
+    serialize_u32_be(*iteration, iterbuf); 
     uint8_t seedbuf[UINT256_SIZE];
     uint256_serialize_be(seed, seedbuf, UINT256_SIZE);
     // Create HMAC_DRBG

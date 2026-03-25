@@ -17,6 +17,7 @@
 #include "util/WalletSetup.h"
 #include "util/SignUtils.h"
 #include "blockchain/block.h"
+#include "blockchain/pkcertchain.h"
 #include "util/To_BO_BE_Pimitives.h"
 #include "util/Size_Offsets.h"
 
