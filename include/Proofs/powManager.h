@@ -13,6 +13,7 @@
 #include "Proofs/TierPoW/tierPoWChallenge.h"
 #include "Proofs/TierPoW/tierPoWSolve.h"
 #include "Proofs/TierPoW/tierPoWVerify.h"
+#include "Proofs/TierPoW/tierPoWResult.h"
 #include "datatype/OpStatus.h"
 
 typedef struct {
@@ -138,7 +139,15 @@ static inline OpStatus_t PowManager_Run(PowManager *manager, block *currentBlock
     if (manager->miniResult) {
         currentBlock->miniPowResult = *(manager->miniResult);
     }
-    currentBlock->tierPoWResult = manager->solve;
+
+    TierPowResult tr;
+    tierpowresult_init(&tr);
+    tr.tier = (Tier_t)manager->tier;
+    tr.challenge = manager->challenge;
+    tr.solve = manager->solve;
+    tr.time_taken = manager->solve_time_seconds;
+    
+    currentBlock->tierPoWResult = tr;
 
     switch(manager->tier) {
         case TIER_MCU: manager->chain->lastMCUBlockIndex = currentBlock->height; break;

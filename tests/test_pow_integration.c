@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "blockchain/pkcertchain.h"
 #include "Proofs/MiniPoW/miniPoWResult.h"
@@ -34,7 +35,12 @@ int main() {
         miniResult.tier = tiers[i];
         printf("\n--- Processing Tier: %s ---\n", tierNames[i]);
         
+        struct timespec start, end;
+        clock_gettime(CLOCK_MONOTONIC, &start);
         OpStatus_t st = PKCertChain_AddBlockWithPoW(&chain, &miniResult, tiers[i]);
+        clock_gettime(CLOCK_MONOTONIC, &end);
+        double total_solve_time = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
+
         if (st != OP_SUCCESS) {
             printf("Failed to add block for tier %s. Code: %d\n", tierNames[i], st);
             return 1;
@@ -43,10 +49,24 @@ int main() {
         block *newBlock = &chain.blocks[chain.index - 1];
         printf("Block added! Height: %lu\n", newBlock->height);
         printf("MiniPoWResult isValid: %s, session: %u\n", newBlock->miniPowResult.isValid ? "true" : "false", newBlock->miniPowResult.sessionid);
-        printf("TierPoWResult challenge_id: %lu, complexity: %u, nonce: %lu\n", 
-               newBlock->tierPoWResult.challenge_id, 
-               newBlock->tierPoWResult.complexity,
-               newBlock->tierPoWResult.nonce);
+        
+        const uint256 *ch = &newBlock->tierPoWResult.challenge.challenge;
+        char challenge_hex[65];
+        sprintf(challenge_hex, "%016llx%016llx%016llx%016llx", 
+                (unsigned long long)ch->w[3], 
+                (unsigned long long)ch->w[2], 
+                (unsigned long long)ch->w[1], 
+                (unsigned long long)ch->w[0]);
+        
+        printf("TierPowResult -> Tier: %u\n", newBlock->tierPoWResult.tier);
+        printf("  ChallengeHash: %s\n", challenge_hex);
+        printf("  ChallengeID: %lu, Nonce: %lu, Complexity: %u\n", 
+               (unsigned long)newBlock->tierPoWResult.challenge.challenge_id, 
+               (unsigned long)newBlock->tierPoWResult.solve.nonce,
+               newBlock->tierPoWResult.solve.complexity);
+        printf("  Internal Block Time: %.3f sec (Measured overall: %.3f sec)\n", 
+               newBlock->tierPoWResult.time_taken,
+               total_solve_time);
         
         uint32_t lastIndex = 0;
         uint8_t newComplexity = 0;
