@@ -15,9 +15,12 @@
 #include "util/To_BO_BE_Pimitives.h"
 #include "util/To_BO_Def_Primitives.h"
 #include "datatype/OpStatus.h"
+#include "Proofs/MiniPoW/miniPoWResult.h"
+#include "Proofs/TierPoW/tierPoWSolve.h"
 
 #define BLOCK_INLINE static inline __attribute__((always_inline))
-#define BLOCK_SERIALIZED_SIZE BLOCK_SIZE
+#define BLOCK_SERIALIZED_SIZE (BLOCK_SIZE + MINI_POW_RESULT_SERIALIZED_SIZE + TIER_POW_SOLVE_SERIALIZED_SIZE)
+
 
 /*
  * PKCertChain Block
@@ -36,6 +39,8 @@ typedef struct __attribute__((aligned(4)))
     uint64_t timestamp;   // 8 monotonic time, canonical 64-bit
     Tier_t tier; // 1 byte
     uint8_t reserved[3]; // padding
+    MiniPowResult miniPowResult;
+    tier_pow_solve_t tierPoWResult;
 } block;
 
 BLOCK_INLINE void block_init(block *blk)
@@ -48,6 +53,8 @@ BLOCK_INLINE void block_init(block *blk)
     blk->timestamp = 0;
     blk->tier = TIER_INVALID;
     memset(blk->reserved, 0, sizeof(blk->reserved));
+    minipowresult_init(&blk->miniPowResult);
+    tier_pow_solve_init(&blk->tierPoWResult);
 }
 
 BLOCK_INLINE const certificate *block_get_cert_ptr(const block *blk)
@@ -130,6 +137,8 @@ BLOCK_INLINE void block_copy(block *dst, const block *src)
     dst->timestamp = src->timestamp;
     dst->tier = src->tier;
     memcpy(dst->reserved, src->reserved, sizeof(dst->reserved));
+    dst->miniPowResult = src->miniPowResult;
+    dst->tierPoWResult = src->tierPoWResult;
 }
 
 BLOCK_INLINE OpStatus_t block_serialize(const block *blk, uint8_t *out, size_t out_size)
@@ -146,6 +155,8 @@ BLOCK_INLINE OpStatus_t block_serialize(const block *blk, uint8_t *out, size_t o
     serialize_u8(blk->tier, out + CERT_SIZE + 2 * UINT256_SIZE + UINT512_SIZE + 2 * UINT64_SIZE);
     memcpy(out + CERT_SIZE + 2 * UINT256_SIZE + UINT512_SIZE + 2 * UINT64_SIZE + 1,
            blk->reserved, sizeof(blk->reserved));
+    if (minipowresult_serialize(&blk->miniPowResult, out + BLOCK_SIZE, MINI_POW_RESULT_SERIALIZED_SIZE) != OP_SUCCESS) return OP_INVALID_INPUT;
+    if (tier_pow_solve_serialize(&blk->tierPoWResult, out + BLOCK_SIZE + MINI_POW_RESULT_SERIALIZED_SIZE, TIER_POW_SOLVE_SERIALIZED_SIZE) != OP_SUCCESS) return OP_INVALID_INPUT;
     return OP_SUCCESS;
 }
 
@@ -164,6 +175,8 @@ BLOCK_INLINE OpStatus_t block_deserialize(const uint8_t *in, size_t in_size, blo
     memcpy(blk->reserved,
            in + CERT_SIZE + 2 * UINT256_SIZE + UINT512_SIZE + 2 * UINT64_SIZE + 1,
            sizeof(blk->reserved));
+    if (minipowresult_deserialize(in + BLOCK_SIZE, MINI_POW_RESULT_SERIALIZED_SIZE, &blk->miniPowResult) != OP_SUCCESS) return OP_INVALID_INPUT;
+    if (tier_pow_solve_deserialize(in + BLOCK_SIZE + MINI_POW_RESULT_SERIALIZED_SIZE, TIER_POW_SOLVE_SERIALIZED_SIZE, &blk->tierPoWResult) != OP_SUCCESS) return OP_INVALID_INPUT;
     return OP_SUCCESS;
 }
 

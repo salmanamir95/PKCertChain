@@ -56,7 +56,21 @@ typedef struct __attribute__((aligned(4))) {
     uint64_t timestamp;
     Tier_t tier;
     uint8_t reserved[3];
+    MiniPowResult miniPowResult;
+    tier_pow_solve_t tierPoWResult;
 } block;
+```
+
+**MiniPowResult (`Proofs/MiniPoW/miniPoWResult.h`):**
+
+```c
+typedef struct __attribute__((aligned(4))) {
+    uint32_t challengeid;
+    uint32_t sessionid;
+    Tier_t tier;
+    bool isValid;
+    uint8_t reserved[2];
+} MiniPowResult;
 ```
 
 **MiniPoW Challenge (`Proofs/MiniPoW/miniPoWChallenge.h`):**

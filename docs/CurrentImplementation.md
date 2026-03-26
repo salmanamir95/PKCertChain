@@ -32,10 +32,14 @@
 - **`block` (`blockchain/block.h`)**
   - Certificate, current cert hash, prev hash, verifier signature, height, timestamp.
   - Tier field added (performance rank).
+  - MiniPowResult field added (classification output).
+  - tier_pow_solve_t field added (TierPoW solution).
   - Full serialization/deserialization (big-endian fields).
 - **`PKCertChain` (`blockchain/pkcertchain.h`)**
   - Fixed-size block array, `index`, `NetworkName`, `complexity`, `next_challenge_id`.
   - Moving average solve time (`avg_solve_time_seconds`).
+  - Per-tier tracking indices (`lastMCUBlockIndex`, etc.).
+  - Per-tier specific complexities updated actively via Bayesian math.
   - Genesis block builds a self-signed certificate.
 
 ### 3. MiniPoW (Classification)
@@ -63,6 +67,9 @@
   - Tracks issued/received timestamps and `target_index`.
 - **Queue (`Proofs/TierPoW/tierPoWQueue.h`)**
   - Fixed-size array queue for TierPoW sessions + candidate blocks.
+- **Manager (`Proofs/powManager.h`)**
+  - Orchestrates deterministic challenge generation and solving loops.
+  - Contains Bayesian complexity math scaling for node capability bounds.
 
 ### 5. Cryptography Utilities
 - **SignUtils (`util/SignUtils.h`)**
@@ -94,21 +101,13 @@
   - `verify_prev_block` -> `give_mini_pow_challenge` -> `verify_mini_pow_solution` -> tier classification
   - `give_tier_pow_challenge` -> `verify_tier_pow_solution` -> add block
 - **Validation gates:**
-  - Explicit validate-before helpers for each step.
+  - Explicit validate-before helpers for each step within `PowManager_Run`.
 - **Difficulty update:**
-**Tier classification (adaptive):**
-  - Based on moving average solve time.
-  - Server <= 0.25 * avg
-  - Desktop <= 0.60 * avg
-  - Edge <= 1.50 * avg
-  - MCU <= 3.00 * avg
-  - 10-minute target (600s)
-  - Faster than target increases complexity; slower decreases.
-  - Clamped to `[1, 220]`.
-- **Tier classification (adaptive):**
-   - 10-minute target (600s)
-  - Faster than target increases complexity; slower decreases.
-  - Clamped to `[1, 220]`.
+  - Independent complexities maintained for each computational tier (`MCUComplexity`, `ServerComplexity`, etc.).
+  - **Tier classification (adaptive):**
+    - 10-minute target (600s) baseline interval.
+    - Faster than target proportionally increases complexity securely; slower decreases.
+    - PowManager utilizes continuous mathematically bounded Bayesian inference updates clamped firmly to `[1, 255]`.
 
 ### 8. Status & Error Handling
 - **`OpStatus_t` (`datatype/OpStatus.h`)**

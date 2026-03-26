@@ -7,7 +7,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "datatype/OpStatus.h"
-#include "blockchain/block.h"
+#include "datatype/uint256_t.h"
 #include "datatype/uint256_t.h"
 #include "util/SignUtils.h"
 #include "util/To_BO_Def_Primitives.h"
@@ -102,37 +102,6 @@ TIER_POW_CHALLENGE_INLINE OpStatus_t tier_pow_challenge_deserialize(const uint8_
     pow->complexity = in[UINT256_SIZE];
     deserialize_u64_be(in + UINT256_SIZE + 1, &pow->challenge_id, sizeof(uint64_t));
     memcpy(pow->reserved, in + UINT256_SIZE + 1 + UINT64_SIZE, sizeof(pow->reserved));
-    return OP_SUCCESS;
-}
-
-/*
- * Generate TierPoW challenge:
- *  - Computes SHA256 hash over the block struct
- *  - Uses hash256_buffer from SignUtils (zero-copy)
- *  - Returns tier_pow_challenge_t with challenge and specified complexity
- */
-TIER_POW_CHALLENGE_INLINE OpStatus_t generate_tier_pow_challenge(block *blk,
-                                                                 uint8_t complexity,
-                                                                 tier_pow_challenge_t *pow)
-{
-    uint8_t buf[CERT_SIZE + UINT256_SIZE + UINT64_SIZE + UINT64_SIZE + 4 * UINT8_SIZE];
-    const size_t packed_len = sizeof(buf);
-
-    if (!blk || !pow) return OP_NULL_PTR;
-
-    uint256_serialize_be(&blk->cert.pubSignKey, buf, UINT256_SIZE);
-    uint256_serialize_be(&blk->cert.pubEncKey, buf + UINT256_SIZE, UINT256_SIZE);
-    buf[CERT_SIZE - 1] = blk->cert.id;
-
-    uint256_serialize_be(&blk->prevHash, buf + CERT_SIZE, UINT256_SIZE);
-    serialize_u64_be(blk->height, buf + CERT_SIZE + UINT256_SIZE);
-    serialize_u64_be(blk->timestamp, buf + CERT_SIZE + UINT256_SIZE + UINT64_SIZE);
-    serialize_u8(blk->tier, buf + CERT_SIZE + UINT256_SIZE + 2 * UINT64_SIZE);
-
-    hash256_buffer(buf, packed_len, &pow->challenge);
-
-    pow->complexity = complexity;
-
     return OP_SUCCESS;
 }
 
