@@ -2,16 +2,16 @@
 #define MINI_POW_MATRIX_H
 
 
-#include "core/Global_Size_Offsets.h"
+#include "shared/core/Global_Size_Offsets.h"
 
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-#include "core/datatypes/uint256_t.h"
-#include "core/enums/OpStatus.h"
-#include "blockchain/certificate.h"
-#include "crypto/SeedUtil.h"
-#include "protocol/proofs/mini_pow/mini_pow_Classify_t.h"
+#include "shared/core/datatypes/uint256_t.h"
+#include "shared/core/enums/OpStatus.h"
+#include "shared/blockchain/certificate.h"
+#include "shared/crypto/SeedUtil.h"
+#include "shared/protocol/proofs/mini_pow/mini_pow_Classify_t.h"
 
 #ifndef MINI_POW_MATRIX_INLINE
 #define MINI_POW_MATRIX_INLINE static inline __attribute__((always_inline))
@@ -22,11 +22,11 @@
  * Contains the deterministic seed assigned to the miner,
  * and the two 1000x1000 matrices A and B populated securely via CSPRNG.
  */
-typedef struct __attribute__((aligned(4))) {
-    uint256 seed;
-    uint16_t A[MINI_POW_MATRIX_N][MINI_POW_MATRIX_N];
-    uint16_t B[MINI_POW_MATRIX_N][MINI_POW_MATRIX_N];
-} mini_pow_Matrix;
+// typedef struct __attribute__((aligned(4))) {
+//     uint256 seed;
+//     uint16_t A[MINI_POW_MATRIX_N][MINI_POW_MATRIX_N];
+//     uint16_t B[MINI_POW_MATRIX_N][MINI_POW_MATRIX_N];
+// } mini_pow_Matrix;
 
 /*
  * Construct the MiniPoW matrices (Seed + A + B)

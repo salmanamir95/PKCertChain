@@ -7,14 +7,14 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <string.h>
-#include "core/datatypes/uint256_t.h"
-#include "core/datatypes/uint512.h"
-#include "core/Global_Size_Offsets.h"
-#include "net/NetworkSerialization.h"
-#include "net/NetworkSerialization.h"
-#include "crypto/SignUtils.h"
-#include "protocol/blockchain/certificate.h"
-#include "core/enums/OpStatus.h"
+#include "shared/core/datatypes/uint256_t.h"
+#include "shared/core/datatypes/uint512.h"
+#include "shared/core/Global_Size_Offsets.h"
+#include "shared/net/NetworkSerialization.h"
+#include "shared/net/NetworkSerialization.h"
+#include "shared/crypto/SignUtils.h"
+#include "shared/protocol/blockchain/certificate.h"
+#include "shared/core/enums/OpStatus.h"
 
 
 #define CERT_INLINE static inline __attribute__((always_inline))

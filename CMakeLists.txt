@@ -1,40 +1,55 @@
-cmake_minimum_required(VERSION 3.10)
-project(pkcertchain C)
+cmake_minimum_required(VERSION 3.20)
 
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_C_STANDARD_REQUIRED ON)
+project(PKCertChain LANGUAGES C CXX)
 
-find_package(OpenSSL REQUIRED)
+# -------------------------------------------------
+# Create library (STATIC so you can extend later)
+# -------------------------------------------------
+add_library(PKCertChain STATIC)
 
-set(PKCERTCHAIN_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
-
-file(GLOB_RECURSE PKCERTCHAIN_SOURCES CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c"
+# -------------------------------------------------
+# Sources (ignore tests explicitly)
+# -------------------------------------------------
+file(GLOB_RECURSE PKC_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
 )
 
-add_executable(pkcertchain ${PKCERTCHAIN_SOURCES})
+target_sources(PKCertChain PRIVATE ${PKC_SOURCES})
 
-target_include_directories(pkcertchain PRIVATE ${PKCERTCHAIN_INCLUDE_DIR})
-
-target_compile_definitions(pkcertchain PRIVATE _DEFAULT_SOURCE)
-target_compile_options(pkcertchain PRIVATE -O3 -Wall -Wextra)
-
-target_link_libraries(pkcertchain PRIVATE OpenSSL::Crypto)
-
-# ----------------- TESTS -----------------
-enable_testing()
-
-file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.c"
+# -------------------------------------------------
+# Include directories
+# -------------------------------------------------
+target_include_directories(PKCertChain PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-foreach(test_source ${TEST_SOURCES})
-    get_filename_component(test_name ${test_source} NAME_WE)
-    add_executable(${test_name} ${test_source})
-    target_include_directories(${test_name} PRIVATE ${PKCERTCHAIN_INCLUDE_DIR})
-    target_compile_definitions(${test_name} PRIVATE _DEFAULT_SOURCE)
-    target_compile_options(${test_name} PRIVATE -O3 -Wall -Wextra)
-    target_link_libraries(${test_name} PRIVATE OpenSSL::Crypto)
-    
-    add_test(NAME ${test_name} COMMAND ${test_name})
-endforeach()
+# -------------------------------------------------
+# Dependency: shared (crypto + core utilities)
+# -------------------------------------------------
+target_link_libraries(PKCertChain PUBLIC shared)
+
+# -------------------------------------------------
+# Language standard
+# -------------------------------------------------
+target_compile_features(PKCertChain PUBLIC cxx_std_23)
+
+# -------------------------------------------------
+# Compiler warnings (safe defaults)
+# -------------------------------------------------
+target_compile_options(PKCertChain PRIVATE
+    -Wall
+    -Wextra
+    -Wshadow
+    -Wconversion
+)
+
+# -------------------------------------------------
+# Output directory
+# peer/build/backend/PKCertChain
+# -------------------------------------------------
+set_target_properties(PKCertChain PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/backend/PKCertChain
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/backend/PKCertChain
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/backend/PKCertChain
+)

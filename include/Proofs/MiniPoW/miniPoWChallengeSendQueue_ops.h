@@ -8,18 +8,18 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "protocol/proofs/mini_pow/mini_pow_challenge_t.h"
-#include "protocol/proofs/mini_pow/mini_pow_ChallengeQueueEntry_t.h"
-#include "core/enums/OpStatus.h"
+#include "shared/protocol/proofs/mini_pow/mini_pow_challenge_t.h"
+#include "shared/protocol/proofs/mini_pow/mini_pow_ChallengeQueueEntry_t.h"
+#include "shared/core/enums/OpStatus.h"
 
 #ifndef MINI_POW_CHALLENGE_QUEUE_MAX
 #define MINI_POW_CHALLENGE_QUEUE_MAX 128
 #endif
 
-typedef struct __attribute__((aligned(4))) {
-    mini_pow_challenge_queue_entry_t entries[MINI_POW_CHALLENGE_QUEUE_MAX];
-    size_t count;
-} mini_pow_challenge_queue_t;
+// typedef struct __attribute__((aligned(4))) {
+//     mini_pow_challenge_queue_entry_t entries[MINI_POW_CHALLENGE_QUEUE_MAX];
+//     size_t count;
+// } mini_pow_challenge_queue_t;
 
 static inline void mini_pow_challenge_queue_init(mini_pow_challenge_queue_t *q)
 {

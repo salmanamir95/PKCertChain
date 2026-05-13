@@ -3,19 +3,19 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "protocol/proofs/mini_pow/SolvedMatricPoW.h"
-#include "protocol/proofs/mini_pow/mini_pow_Matrix.h"
-#include "core/enums/Tier.h"
+#include "shared/protocol/proofs/mini_pow/SolvedMatricPoW.h"
+#include "shared/protocol/proofs/mini_pow/mini_pow_Matrix.h"
+#include "shared/core/enums/Tier.h"
 
 // The final result returned by the manager
-typedef struct {
-    uint32_t challengeid;
-    uint32_t sessionid;
-    const mini_pow_Matrix *minipowmatrix;
-    const SolvedMatricPoW *solvedmatrix;
-    Tier_t tier;
-    bool isValid;
-} mini_pow_result;
+// typedef struct {
+//     uint32_t challengeid;
+//     uint32_t sessionid;
+//     const mini_pow_Matrix *minipowmatrix;
+//     const SolvedMatricPoW *solvedmatrix;
+//     Tier_t tier;
+//     bool isValid;
+// } mini_pow_result;
 
 
 

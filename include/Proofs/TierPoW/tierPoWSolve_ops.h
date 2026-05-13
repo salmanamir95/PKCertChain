@@ -6,24 +6,24 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
-#include "Proofs/TierPoW/tierPoWChallenge.h"
-#include "core/datatypes/uint256_t.h"
-#include "crypto/SignUtils.h"
-#include "net/NetworkSerialization.h"
-#include "core/Global_Size_Offsets.h"
-#include "core/enums/OpStatus.h"
+#include "shared/proofs/tier_pow/tierPoWChallenge.h"
+#include "shared/core/datatypes/uint256_t.h"
+#include "shared/crypto/SignUtils.h"
+#include "shared/net/NetworkSerialization.h"
+#include "shared/core/Global_Size_Offsets.h"
+#include "shared/core/enums/OpStatus.h"
 
 #define TIER_POW_SOLVE_INLINE static inline __attribute__((always_inline))
 
 #define TIER_POW_SOLVE_SERIALIZED_SIZE TIER_POW_SOLVE_SIZE
 
-typedef struct __attribute__((aligned(4)))
-{
-    uint64_t nonce;     // 8 bytes
-    uint8_t complexity; // 1 byte
-    uint64_t challenge_id; // 8 bytes
-    uint8_t reserved[3];
-} tier_pow_solve_t;
+// typedef struct __attribute__((aligned(4)))
+// {
+//     uint64_t nonce;     // 8 bytes
+//     uint8_t complexity; // 1 byte
+//     uint64_t challenge_id; // 8 bytes
+//     uint8_t reserved[3];
+// } tier_pow_solve_t;
 
 TIER_POW_SOLVE_INLINE void tier_pow_solve_init(tier_pow_solve_t *pow)
 {

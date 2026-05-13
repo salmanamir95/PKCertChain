@@ -10,22 +10,22 @@
 
 #include "Proofs/TierPoW/tierPoWSession.h"
 #include "blockchain/block.h"
-#include "core/enums/OpStatus.h"
+#include "sharedd/core/enums/OpStatus.h"
 
 #ifndef TIER_POW_QUEUE_MAX
 #define TIER_POW_QUEUE_MAX 128
 #endif
 
-typedef struct __attribute__((aligned(4))) {
-    bool used;
-    tier_pow_session_t session;
-    block candidate;
-} tier_pow_queue_entry_t;
+// typedef struct __attribute__((aligned(4))) {
+//     bool used;
+//     tier_pow_session_t session;
+//     block candidate;
+// } tier_pow_queue_entry_t;
 
-typedef struct __attribute__((aligned(4))) {
-    tier_pow_queue_entry_t entries[TIER_POW_QUEUE_MAX];
-    size_t count;
-} tier_pow_queue_t;
+// typedef struct __attribute__((aligned(4))) {
+//     tier_pow_queue_entry_t entries[TIER_POW_QUEUE_MAX];
+//     size_t count;
+// } tier_pow_queue_t;
 
 static inline void tier_pow_queue_init(tier_pow_queue_t *q)
 {

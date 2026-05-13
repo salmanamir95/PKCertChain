@@ -10,20 +10,20 @@
 
 #include "blockchain/block.h"
 #include "blockchain/pkcertchain_ops.h"
-#include "Proofs/TierPoW/tierPoWChallenge.h"
-#include "Proofs/TierPoW/tierPoWSolve.h"
-#include "Proofs/TierPoW/tierPoWVerify.h"
-#include "Proofs/TierPoW/tierPoWResult.h"
-#include "core/enums/OpStatus.h"
+#include "shared/proofs/tier_pow/tierPoWChallenge.h"
+#include "shared/proofs/tier_pow/tierPoWSolve.h"
+#include "shared/proofs/tier_pow/tierPoWVerify.h"
+#include "shared/proofs/tier_pow/tierPoWResult.h"
+#include "shared/core/enums/OpStatus.h"
 
-typedef struct {
-    PKCertChain *chain;
-    uint8_t tier;
-    MiniPowResult *miniResult;
-    tier_pow_challenge_t challenge;
-    tier_pow_solve_t solve;
-    double solve_time_seconds;
-} PowManager;
+// typedef struct {
+//     PKCertChain *chain;
+//     uint8_t tier;
+//     MiniPowResult *miniResult;
+//     tier_pow_challenge_t challenge;
+//     tier_pow_solve_t solve;
+//     double solve_time_seconds;
+// } PowManager;
 
 static inline uint8_t bayesian_update(uint8_t current_complexity, double solve_time_seconds) {
     const double target_time = 600.0;

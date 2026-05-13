@@ -6,12 +6,12 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
-#include "core/enums/OpStatus.h"
-#include "core/datatypes/uint256_t.h"
-#include "core/datatypes/uint256_t.h"
-#include "crypto/SignUtils.h"
-#include "net/NetworkSerialization.h"
-#include "core/Global_Size_Offsets.h"
+#include "shared/core/enums/OpStatus.h"
+#include "shared/core/datatypes/uint256_t.h"
+#include "shared/core/datatypes/uint256_t.h"
+#include "shared/crypto/SignUtils.h"
+#include "shared/net/NetworkSerialization.h"
+#include "shared/core/Global_Size_Offsets.h"
 
 #define TIER_POW_CHALLENGE_INLINE static inline __attribute__((always_inline))
 
@@ -24,12 +24,12 @@
  *  - complexity 0-255 bits
  *  - padding to keep size a 32-bit multiple
  */
-typedef struct __attribute__((aligned(4))) {
-    uint256 challenge;   // 32 bytes
-    uint8_t complexity;  // 1 byte
-    uint64_t challenge_id; // 8 bytes
-    uint8_t reserved[3]; // padding to make 32-bit multiple
-} tier_pow_challenge_t;
+// typedef struct __attribute__((aligned(4))) {
+//     uint256 challenge;   // 32 bytes
+//     uint8_t complexity;  // 1 byte
+//     uint64_t challenge_id; // 8 bytes
+//     uint8_t reserved[3]; // padding to make 32-bit multiple
+// } tier_pow_challenge_t;
 
 TIER_POW_CHALLENGE_INLINE void tier_pow_challenge_init(tier_pow_challenge_t *pow)
 {

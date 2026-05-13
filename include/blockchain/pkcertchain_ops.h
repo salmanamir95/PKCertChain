@@ -34,17 +34,17 @@ typedef struct __attribute__((aligned(4))) {
 
 #include "crypto/SignUtils.h"
 #include "crypto/EncUtils.h"
-#include "protocol/proofs/mini_pow/mini_pow_challenge_t.h"
-#include "protocol/proofs/mini_pow/mini_pow_Solve_t.h"
-#include "protocol/proofs/mini_pow/mini_pow_Verify_t.h"
-#include "protocol/proofs/mini_pow/mini_pow_Session_t.h"
-#include "protocol/proofs/mini_pow/mini_pow_Queue_t.h"
-#include "protocol/proofs/mini_pow/mini_pow_Classify_t.h"
-#include "Proofs/TierPoW/tierPoWChallenge.h"
-#include "Proofs/TierPoW/tierPoWSolve.h"
-#include "Proofs/TierPoW/tierPoWVerify.h"
-#include "Proofs/TierPoW/tierPoWSession.h"
-#include "Proofs/TierPoW/tierPoWQueue.h"
+#include "shared/protocol/proofs/mini_pow/mini_pow_challenge_t.h"
+#include "shared/protocol/proofs/mini_pow/mini_pow_Solve_t.h"
+#include "shared/protocol/proofs/mini_pow/mini_pow_Verify_t.h"
+#include "shared/protocol/proofs/mini_pow/mini_pow_Session_t.h"
+#include "shared/protocol/proofs/mini_pow/mini_pow_Queue_t.h"
+#include "shared/protocol/proofs/mini_pow/mini_pow_Classify_t.h"
+#include "shared/protocol/proofs/TierPoW/tierPoWChallenge.h"
+#include "shared/protocol/proofs/TierPoW/tierPoWSolve.h"
+#include "shared/protocol/proofs/TierPoW/tierPoWVerify.h"
+#include "shared/protocol/proofs/TierPoW/tierPoWSession.h"
+#include "shared/protocol/proofs/TierPoW/tierPoWQueue.h"
 
 PKCERTCHAIN_INLINE OpStatus_t Gensis_Block(PKCertChain *chain)
 {
