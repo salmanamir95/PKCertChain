@@ -1,7 +1,7 @@
 #ifndef TIER_POW_RESULT_H
 #define TIER_POW_RESULT_H
 
-#include "pkcertchain_config.h"
+
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>

@@ -1,7 +1,7 @@
 #ifndef UINT512_H
 #define UINT512_H
 
-#include "pkcertchain_config.h"
+
 
 
 #include <stdint.h>

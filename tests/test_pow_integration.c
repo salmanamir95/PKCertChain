@@ -3,8 +3,8 @@
 #include <string.h>
 #include <time.h>
 
-#include "blockchain/pkcertchain.h"
-#include "Proofs/MiniPoW/miniPoWResult.h"
+#include "blockchain/pkcertchain_ops.h"
+#include "protocol/proofs/mini_pow/mini_pow_Result_t.h"
 #include "Proofs/powManager.h"
 
 int main() {

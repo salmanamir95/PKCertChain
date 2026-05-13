@@ -1,11 +1,11 @@
 #ifndef SOLVED_MATRIC_POW_H
 #define SOLVED_MATRIC_POW_H
 
-#include "pkcertchain_config.h"
+
 #include "core/Global_Size_Offsets.h"
 #include <stdint.h>
 #include <string.h>
-#include "Proofs/MiniPoW/miniPoWClassify.h"
+#include "protocol/proofs/mini_pow/mini_pow_Classify_t.h"
 
 #ifndef SOLVED_MATRIC_POW_INLINE
 #define SOLVED_MATRIC_POW_INLINE static inline __attribute__((always_inline))

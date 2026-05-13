@@ -1,7 +1,7 @@
 #ifndef CERTIFICATE_H
 #define CERTIFICATE_H
 
-#include "pkcertchain_config.h"
+
 
 
 #include <stdint.h>

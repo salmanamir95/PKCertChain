@@ -1,7 +1,7 @@
 #ifndef POW_MANAGER_H
 #define POW_MANAGER_H
 
-#include "pkcertchain_config.h"
+
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 #include "blockchain/block.h"
-#include "blockchain/pkcertchain.h"
+#include "blockchain/pkcertchain_ops.h"
 #include "Proofs/TierPoW/tierPoWChallenge.h"
 #include "Proofs/TierPoW/tierPoWSolve.h"
 #include "Proofs/TierPoW/tierPoWVerify.h"

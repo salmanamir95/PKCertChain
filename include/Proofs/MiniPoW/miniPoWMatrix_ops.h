@@ -1,7 +1,7 @@
 #ifndef MINI_POW_MATRIX_H
 #define MINI_POW_MATRIX_H
 
-#include "pkcertchain_config.h"
+
 #include "core/Global_Size_Offsets.h"
 
 #include <stdint.h>
@@ -11,7 +11,7 @@
 #include "core/enums/OpStatus.h"
 #include "blockchain/certificate.h"
 #include "crypto/SeedUtil.h"
-#include "Proofs/MiniPoW/miniPoWClassify.h"
+#include "protocol/proofs/mini_pow/mini_pow_Classify_t.h"
 
 #ifndef MINI_POW_MATRIX_INLINE
 #define MINI_POW_MATRIX_INLINE static inline __attribute__((always_inline))

@@ -1,7 +1,7 @@
 #ifndef MINI_POW_TRACKER_H
 #define MINI_POW_TRACKER_H
 
-#include "pkcertchain_config.h"
+
 #include <stdint.h>
 #include <string.h>
 #include <time.h>

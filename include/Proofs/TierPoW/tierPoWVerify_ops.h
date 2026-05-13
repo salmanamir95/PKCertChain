@@ -1,7 +1,7 @@
 #ifndef TIER_POW_SOLVE_VERIFY_H
 #define TIER_POW_SOLVE_VERIFY_H
 
-#include "pkcertchain_config.h"
+
 
 #include <stdbool.h>
 #include <stdint.h>

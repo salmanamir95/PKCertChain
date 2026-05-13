@@ -4,8 +4,8 @@
 #include <stdlib.h>
 
 #include "system/utilities.h"
-#include "Proofs/MiniPoW/miniPoWManager.h"
-#include "Proofs/MiniPoW/miniPoWSolve.h"
+#include "Proofs/MiniPoW/miniPoWManager_ops.h"
+#include "protocol/proofs/mini_pow/mini_pow_Solve_t.h"
 
 int main(void)
 {

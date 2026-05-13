@@ -1,15 +1,15 @@
 #ifndef MINI_POW_CHALLENGE_SEND_QUEUE_H
 #define MINI_POW_CHALLENGE_SEND_QUEUE_H
 
-#include "pkcertchain_config.h"
+
 
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 
-#include "Proofs/MiniPoW/miniPoWChallenge.h"
-#include "Proofs/MiniPoW/miniPoWChallengeQueueEntry.h"
+#include "protocol/proofs/mini_pow/mini_pow_challenge_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_ChallengeQueueEntry_t.h"
 #include "core/enums/OpStatus.h"
 
 #ifndef MINI_POW_CHALLENGE_QUEUE_MAX

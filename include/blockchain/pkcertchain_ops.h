@@ -1,7 +1,7 @@
 #ifndef PKCERTCHAIN_H
 #define PKCERTCHAIN_H
 
-#include "pkcertchain_config.h"
+
 
 
 
@@ -34,12 +34,12 @@ typedef struct __attribute__((aligned(4))) {
 
 #include "crypto/SignUtils.h"
 #include "crypto/EncUtils.h"
-#include "Proofs/MiniPoW/miniPoWChallenge.h"
-#include "Proofs/MiniPoW/miniPoWSolve.h"
-#include "Proofs/MiniPoW/miniPoWVerify.h"
-#include "Proofs/MiniPoW/miniPoWSession.h"
-#include "Proofs/MiniPoW/miniPoWQueue.h"
-#include "Proofs/MiniPoW/miniPoWClassify.h"
+#include "protocol/proofs/mini_pow/mini_pow_challenge_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_Solve_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_Verify_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_Session_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_Queue_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_Classify_t.h"
 #include "Proofs/TierPoW/tierPoWChallenge.h"
 #include "Proofs/TierPoW/tierPoWSolve.h"
 #include "Proofs/TierPoW/tierPoWVerify.h"

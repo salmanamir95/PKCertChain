@@ -1,10 +1,10 @@
 #ifndef MINI_POW_CHALLENGE_QUEUE_ENTRY_H
 #define MINI_POW_CHALLENGE_QUEUE_ENTRY_H
 
-#include "pkcertchain_config.h"
+
 
 #include <stdbool.h>
-#include "Proofs/MiniPoW/miniPoWChallenge.h"
+#include "protocol/proofs/mini_pow/mini_pow_challenge_t.h"
 
 /*
  * MiniPoW Challenge Queue Entry

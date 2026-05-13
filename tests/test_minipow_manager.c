@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "Proofs/MiniPoW/miniPoWManager.h"
-#include "Proofs/MiniPoW/miniPoWChallengeSendQueue.h"
-#include "Proofs/MiniPoW/miniPoWChallengeReceiveQueue.h"
-#include "Proofs/MiniPoW/miniPoWSolve.h"
-#include "Proofs/MiniPoW/miniPoWMatrix.h"
+#include "Proofs/MiniPoW/miniPoWManager_ops.h"
+#include "protocol/proofs/mini_pow/mini_pow_ChallengeSendQueue_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_ChallengeReceiveQueue_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_Solve_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_Matrix_t.h"
 
 int main() {
     printf("Initializing MiniPoW Manager framework...\n");

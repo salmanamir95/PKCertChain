@@ -1,7 +1,7 @@
 #ifndef TIER_POW_QUEUE_H
 #define TIER_POW_QUEUE_H
 
-#include "pkcertchain_config.h"
+
 
 #include <stdbool.h>
 #include <stddef.h>

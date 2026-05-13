@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "blockchain/pkcertchain.h"
-#include "Proofs/MiniPoW/miniPoWManager.h"
-#include "Proofs/MiniPoW/miniPoWSolve.h"
-#include "Proofs/MiniPoW/miniPoWChallengeSendQueue.h"
-#include "Proofs/MiniPoW/miniPoWAck.h"
+#include "blockchain/pkcertchain_ops.h"
+#include "protocol/proofs/mini_pow/mini_pow_Manager_ops_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_Solve_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_ChallengeSendQueue_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_Ack_t.h"
 #include "system/utilities.h"
 #include "crypto/SeedUtil.h"
 

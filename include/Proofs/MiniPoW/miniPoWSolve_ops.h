@@ -1,14 +1,14 @@
 #ifndef MINI_POW_SOLVE_H
 #define MINI_POW_SOLVE_H
 
-#include "pkcertchain_config.h"
+
 #include "core/Global_Size_Offsets.h"
 
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
-#include "Proofs/MiniPoW/miniPoWChallenge.h"
-#include "Proofs/MiniPoW/miniPoWClassify.h"
+#include "protocol/proofs/mini_pow/mini_pow_challenge_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_Classify_t.h"
 #include "core/enums/OpStatus.h"
 
 #ifndef MINI_POW_SOLVE_INLINE

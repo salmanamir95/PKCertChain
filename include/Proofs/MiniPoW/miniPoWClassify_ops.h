@@ -1,7 +1,7 @@
 #ifndef MINI_POW_CLASSIFY_H
 #define MINI_POW_CLASSIFY_H
 
-#include "pkcertchain_config.h"
+
 #include "core/Global_Size_Offsets.h"
 
 #include <stdint.h>

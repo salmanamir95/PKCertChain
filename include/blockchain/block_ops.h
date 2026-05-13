@@ -1,7 +1,7 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
-#include "pkcertchain_config.h"
+
 
 
 #include <stdint.h>
@@ -15,7 +15,7 @@
 #include "net/NetworkSerialization.h"
 #include "net/NetworkSerialization.h"
 #include "core/enums/OpStatus.h"
-#include "Proofs/MiniPoW/miniPoWResult.h"
+#include "protocol/proofs/mini_pow/mini_pow_Result_t.h"
 #include "Proofs/TierPoW/tierPoWResult.h"
 
 #define BLOCK_INLINE static inline __attribute__((always_inline))

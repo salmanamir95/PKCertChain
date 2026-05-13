@@ -1,7 +1,7 @@
 #ifndef TIER_POW_CHALLENGE_H
 #define TIER_POW_CHALLENGE_H
 
-#include "pkcertchain_config.h"
+
 
 #include <stdint.h>
 #include <string.h>

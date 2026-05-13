@@ -1,9 +1,9 @@
 #ifndef MINI_POW_SESSION_H
 #define MINI_POW_SESSION_H
 
-#include "pkcertchain_config.h"
+
 #include <stdint.h>
-#include "Proofs/MiniPoW/miniPoWChallenge.h"
+#include "protocol/proofs/mini_pow/mini_pow_challenge_t.h"
 
 typedef struct __attribute__((aligned(4))) {
     mini_pow_challenge_t challenge;
