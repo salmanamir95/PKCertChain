@@ -6,12 +6,12 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "enums/Tier.h"
+#include "core/enums/Tier.h"
 #include "Proofs/TierPoW/tierPoWChallenge.h"
 #include "Proofs/TierPoW/tierPoWSolve.h"
-#include "util/NetworkSerialization.h"
-#include "util/NetworkSerialization.h"
-#include "enums/OpStatus.h"
+#include "net/NetworkSerialization.h"
+#include "net/NetworkSerialization.h"
+#include "core/enums/OpStatus.h"
 
 // Total serialized size: 1 + 3 + 44 + 20 + 8 = 76 bytes
 typedef struct __attribute__((aligned(4))) {

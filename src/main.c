@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "util/utilities.h"
+#include "system/utilities.h"
 #include "Proofs/MiniPoW/miniPoWManager.h"
 #include "Proofs/MiniPoW/miniPoWSolve.h"
 

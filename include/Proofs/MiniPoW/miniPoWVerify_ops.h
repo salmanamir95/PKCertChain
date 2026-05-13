@@ -2,13 +2,13 @@
 #define MINI_POW_VERIFY_H
 
 #include "pkcertchain_config.h"
-#include "Global_Size_Offsets.h"
+#include "core/Global_Size_Offsets.h"
 
 #include <stdint.h>
 #include <stdbool.h>
 #include "Proofs/MiniPoW/miniPoWMatrix.h"
 #include "Proofs/MiniPoW/solvedMatricPoW.h"
-#include "enums/OpStatus.h"
+#include "core/enums/OpStatus.h"
 
 #ifndef MINI_POW_VERIFY_INLINE
 #define MINI_POW_VERIFY_INLINE static inline __attribute__((always_inline))

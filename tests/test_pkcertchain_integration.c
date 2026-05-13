@@ -7,8 +7,8 @@
 #include "Proofs/MiniPoW/miniPoWSolve.h"
 #include "Proofs/MiniPoW/miniPoWChallengeSendQueue.h"
 #include "Proofs/MiniPoW/miniPoWAck.h"
-#include "util/utilities.h"
-#include "util/SeedUtil.h"
+#include "system/utilities.h"
+#include "crypto/SeedUtil.h"
 
 int main() {
     printf("--- PKCertChain & MiniPoW Integration Simulation ---\n\n");

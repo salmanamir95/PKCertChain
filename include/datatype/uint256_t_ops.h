@@ -8,9 +8,9 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stddef.h>
-#include "util/NetworkSerialization.h"
-#include "util/NetworkSerialization.h"
-#include "enums/OpStatus.h"
+#include "net/NetworkSerialization.h"
+#include "net/NetworkSerialization.h"
+#include "core/enums/OpStatus.h"
 /* Force aggressive inlining */
 #define U256_INLINE static inline __attribute__((always_inline))
 

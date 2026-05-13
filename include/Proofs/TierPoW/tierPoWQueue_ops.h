@@ -10,7 +10,7 @@
 
 #include "Proofs/TierPoW/tierPoWSession.h"
 #include "blockchain/block.h"
-#include "enums/OpStatus.h"
+#include "core/enums/OpStatus.h"
 
 #ifndef TIER_POW_QUEUE_MAX
 #define TIER_POW_QUEUE_MAX 128

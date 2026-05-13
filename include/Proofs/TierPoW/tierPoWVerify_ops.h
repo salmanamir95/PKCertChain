@@ -10,8 +10,8 @@
 
 #include "Proofs/TierPoW/tierPoWChallenge.h"
 #include "Proofs/TierPoW/tierPoWSolve.h"
-#include "util/NetworkSerialization.h"
-#include "enums/OpStatus.h"
+#include "net/NetworkSerialization.h"
+#include "core/enums/OpStatus.h"
 
 TIER_POW_VERIFY_INLINE bool isValidTierChallenge(const tier_pow_challenge_t* pow,
                                                  const tier_pow_solve_t* solve)

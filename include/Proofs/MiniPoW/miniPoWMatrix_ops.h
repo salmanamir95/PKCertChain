@@ -2,15 +2,15 @@
 #define MINI_POW_MATRIX_H
 
 #include "pkcertchain_config.h"
-#include "Global_Size_Offsets.h"
+#include "core/Global_Size_Offsets.h"
 
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-#include "datatype/uint256_t.h"
-#include "enums/OpStatus.h"
+#include "core/datatypes/uint256_t.h"
+#include "core/enums/OpStatus.h"
 #include "blockchain/certificate.h"
-#include "util/SeedUtil.h"
+#include "crypto/SeedUtil.h"
 #include "Proofs/MiniPoW/miniPoWClassify.h"
 
 #ifndef MINI_POW_MATRIX_INLINE

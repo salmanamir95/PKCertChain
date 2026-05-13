@@ -7,14 +7,14 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-#include "datatype/uint256_t.h"
-#include "datatype/uint512.h"
+#include "core/datatypes/uint256_t.h"
+#include "core/datatypes/uint512.h"
 #include "blockchain/certificate.h"
-#include "enums/Tier.h"
-#include "Global_Size_Offsets.h"
-#include "util/NetworkSerialization.h"
-#include "util/NetworkSerialization.h"
-#include "enums/OpStatus.h"
+#include "core/enums/Tier.h"
+#include "core/Global_Size_Offsets.h"
+#include "net/NetworkSerialization.h"
+#include "net/NetworkSerialization.h"
+#include "core/enums/OpStatus.h"
 #include "Proofs/MiniPoW/miniPoWResult.h"
 #include "Proofs/TierPoW/tierPoWResult.h"
 

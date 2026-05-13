@@ -8,11 +8,11 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stddef.h>
-#include "datatype/uint256_t.h"
-#include "Global_Size_Offsets.h"
-#include "util/NetworkSerialization.h"
-#include "util/NetworkSerialization.h"
-#include "enums/OpStatus.h"
+#include "core/datatypes/uint256_t.h"
+#include "core/Global_Size_Offsets.h"
+#include "net/NetworkSerialization.h"
+#include "net/NetworkSerialization.h"
+#include "core/enums/OpStatus.h"
 
 
 /* Force aggressive inlining */

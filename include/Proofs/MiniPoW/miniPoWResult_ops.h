@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include "Proofs/MiniPoW/solvedMatricPoW.h"
 #include "Proofs/MiniPoW/miniPoWMatrix.h"
-#include "enums/Tier.h"
+#include "core/enums/Tier.h"
 
 // The final result returned by the manager
 typedef struct {

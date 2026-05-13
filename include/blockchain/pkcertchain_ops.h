@@ -32,8 +32,8 @@ typedef struct __attribute__((aligned(4))) {
     uint8_t EdgeComplexity;
 } PKCertChain;
 
-#include "util/SignUtils.h"
-#include "util/EncUtils.h"
+#include "crypto/SignUtils.h"
+#include "crypto/EncUtils.h"
 #include "Proofs/MiniPoW/miniPoWChallenge.h"
 #include "Proofs/MiniPoW/miniPoWSolve.h"
 #include "Proofs/MiniPoW/miniPoWVerify.h"
@@ -103,7 +103,7 @@ PKCERTCHAIN_INLINE OpStatus_t Gensis_Block(PKCertChain *chain)
 
 
 
-#include "util/LinuxUtils.h"
+#include "system/LinuxUtils.h"
 
 PKCERTCHAIN_INLINE OpStatus_t save_chain_state(const char *network_name, const PKCertChain *chain)
 {

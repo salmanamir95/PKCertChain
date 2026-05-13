@@ -6,12 +6,12 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
-#include "enums/OpStatus.h"
-#include "datatype/uint256_t.h"
-#include "datatype/uint256_t.h"
-#include "util/SignUtils.h"
-#include "util/NetworkSerialization.h"
-#include "Global_Size_Offsets.h"
+#include "core/enums/OpStatus.h"
+#include "core/datatypes/uint256_t.h"
+#include "core/datatypes/uint256_t.h"
+#include "crypto/SignUtils.h"
+#include "net/NetworkSerialization.h"
+#include "core/Global_Size_Offsets.h"
 
 #define TIER_POW_CHALLENGE_INLINE static inline __attribute__((always_inline))
 
