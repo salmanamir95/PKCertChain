@@ -10,7 +10,7 @@
 
 #include "Proofs/MiniPoW/miniPoWChallenge.h"
 #include "Proofs/MiniPoW/miniPoWChallengeQueueEntry.h"
-#include "datatype/OpStatus.h"
+#include "enums/OpStatus.h"
 
 #ifndef MINI_POW_CHALLENGE_RECEIVE_QUEUE_MAX
 #define MINI_POW_CHALLENGE_RECEIVE_QUEUE_MAX 128

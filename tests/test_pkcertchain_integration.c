@@ -49,7 +49,7 @@ int main() {
         // Node Registration
         certificate cert;
         memset(&cert, 0, sizeof(certificate));
-        cert_set_id(&cert, 100 + node_idx);
+        ipv6_t test_ip; ipv6_init(&test_ip, (uint8_t[16]){100 + (uint8_t)node_idx}); cert_set_id(&cert, &test_ip);
         
         // Session Management Rule via serialization block hash analysis directly
         block *lastBlock = &chain.blocks[chain.index - 1];

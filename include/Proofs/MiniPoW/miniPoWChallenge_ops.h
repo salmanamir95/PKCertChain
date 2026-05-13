@@ -6,9 +6,9 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
-#include "datatype/OpStatus.h"
+#include "enums/OpStatus.h"
 #include "Proofs/MiniPoW/miniPoWClassify.h"
-#include "util/Size_Offsets.h"
+#include "Global_Size_Offsets.h"
 
 #define MINI_POW_CHALLENGE_INLINE static inline __attribute__((always_inline))
 

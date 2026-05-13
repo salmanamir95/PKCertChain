@@ -14,7 +14,7 @@
 #include "Proofs/TierPoW/tierPoWSolve.h"
 #include "Proofs/TierPoW/tierPoWVerify.h"
 #include "Proofs/TierPoW/tierPoWResult.h"
-#include "datatype/OpStatus.h"
+#include "enums/OpStatus.h"
 
 typedef struct {
     PKCertChain *chain;

@@ -9,9 +9,9 @@
 #include "Proofs/TierPoW/tierPoWChallenge.h"
 #include "datatype/uint256_t.h"
 #include "util/SignUtils.h"
-#include "util/To_BO_Def_Primitives.h"
-#include "util/Size_Offsets.h"
-#include "datatype/OpStatus.h"
+#include "util/NetworkSerialization.h"
+#include "Global_Size_Offsets.h"
+#include "enums/OpStatus.h"
 
 #define TIER_POW_SOLVE_INLINE static inline __attribute__((always_inline))
 
@@ -63,33 +63,11 @@ TIER_POW_SOLVE_INLINE void tier_pow_solve_set_complexity(tier_pow_solve_t *pow, 
     pow->complexity = complexity;
 }
 
-TIER_POW_SOLVE_INLINE OpStatus_t tier_pow_solve_serialize(const tier_pow_solve_t *pow,
-                                                          uint8_t *out,
-                                                          size_t out_size)
-{
-    if (!pow || !out) return OP_NULL_PTR;
-    if (out_size < TIER_POW_SOLVE_SERIALIZED_SIZE) return OP_BUF_TOO_SMALL;
+/* Moved to NetworkSerialization.h */
 
-    serialize_u64_be(pow->nonce, out);
-    serialize_u8(pow->complexity, out + UINT64_SIZE);
-    serialize_u64_be(pow->challenge_id, out + UINT64_SIZE + 1);
-    memcpy(out + UINT64_SIZE + 1 + UINT64_SIZE, pow->reserved, sizeof(pow->reserved));
-    return OP_SUCCESS;
-}
 
-TIER_POW_SOLVE_INLINE OpStatus_t tier_pow_solve_deserialize(const uint8_t *in,
-                                                            size_t in_size,
-                                                            tier_pow_solve_t *pow)
-{
-    if (!pow || !in) return OP_NULL_PTR;
-    if (in_size < TIER_POW_SOLVE_SERIALIZED_SIZE) return OP_BUF_TOO_SMALL;
+/* Moved to NetworkSerialization.h */
 
-    deserialize_u64_be(in, &pow->nonce, sizeof(uint64_t));
-    pow->complexity = in[UINT64_SIZE];
-    deserialize_u64_be(in + UINT64_SIZE + 1, &pow->challenge_id, sizeof(uint64_t));
-    memcpy(pow->reserved, in + UINT64_SIZE + 1 + UINT64_SIZE, sizeof(pow->reserved));
-    return OP_SUCCESS;
-}
 
 // exactly check the first n bits exactly zero and no more should be zero
 TIER_POW_SOLVE_INLINE bool tier_pow_check_complexity_met(uint256 *hash, uint8_t complexity)

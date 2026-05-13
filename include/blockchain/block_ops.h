@@ -10,11 +10,11 @@
 #include "datatype/uint256_t.h"
 #include "datatype/uint512.h"
 #include "blockchain/certificate.h"
-#include "blockchain/Tier.h"
-#include "util/Size_Offsets.h"
-#include "util/To_BO_BE_Pimitives.h"
-#include "util/To_BO_Def_Primitives.h"
-#include "datatype/OpStatus.h"
+#include "enums/Tier.h"
+#include "Global_Size_Offsets.h"
+#include "util/NetworkSerialization.h"
+#include "util/NetworkSerialization.h"
+#include "enums/OpStatus.h"
 #include "Proofs/MiniPoW/miniPoWResult.h"
 #include "Proofs/TierPoW/tierPoWResult.h"
 
@@ -141,43 +141,10 @@ BLOCK_INLINE void block_copy(block *dst, const block *src)
     dst->tierPoWResult = src->tierPoWResult;
 }
 
-BLOCK_INLINE OpStatus_t block_serialize(const block *blk, uint8_t *out, size_t out_size)
-{
-    if (!blk || !out) return OP_NULL_PTR;
-    if (out_size < BLOCK_SERIALIZED_SIZE) return OP_BUF_TOO_SMALL;
+/* Moved to NetworkSerialization.h */
 
-    if (cert_serialize(&blk->cert, out, CERT_SIZE) != OP_SUCCESS) return OP_INVALID_INPUT;
-    if (uint256_serialize_be(&blk->CurrentCertHash, out + CERT_SIZE, UINT256_SIZE) != OP_SUCCESS) return OP_INVALID_INPUT;
-    if (uint256_serialize_be(&blk->prevHash, out + CERT_SIZE + UINT256_SIZE, UINT256_SIZE) != OP_SUCCESS) return OP_INVALID_INPUT;
-    if (uint512_serialize_be(&blk->SignedByVerifier, out + CERT_SIZE + 2 * UINT256_SIZE, UINT512_SIZE) != OP_SUCCESS) return OP_INVALID_INPUT;
-    serialize_u64_be(blk->height, out + CERT_SIZE + 2 * UINT256_SIZE + UINT512_SIZE);
-    serialize_u64_be(blk->timestamp, out + CERT_SIZE + 2 * UINT256_SIZE + UINT512_SIZE + UINT64_SIZE);
-    serialize_u8(blk->tier, out + CERT_SIZE + 2 * UINT256_SIZE + UINT512_SIZE + 2 * UINT64_SIZE);
-    memcpy(out + CERT_SIZE + 2 * UINT256_SIZE + UINT512_SIZE + 2 * UINT64_SIZE + 1,
-           blk->reserved, sizeof(blk->reserved));
-    if (minipowresult_serialize(&blk->miniPowResult, out + BLOCK_SIZE, MINI_POW_RESULT_SERIALIZED_SIZE) != OP_SUCCESS) return OP_INVALID_INPUT;
-    if (tierpowresult_serialize(&blk->tierPoWResult, out + BLOCK_SIZE + MINI_POW_RESULT_SERIALIZED_SIZE, TIER_POW_RESULT_SERIALIZED_SIZE) != OP_SUCCESS) return OP_INVALID_INPUT;
-    return OP_SUCCESS;
-}
 
-BLOCK_INLINE OpStatus_t block_deserialize(const uint8_t *in, size_t in_size, block *blk)
-{
-    if (!blk || !in) return OP_NULL_PTR;
-    if (in_size < BLOCK_SERIALIZED_SIZE) return OP_BUF_TOO_SMALL;
+/* Moved to NetworkSerialization.h */
 
-    if (cert_deserialize(in, CERT_SIZE, &blk->cert) != OP_SUCCESS) return OP_INVALID_INPUT;
-    if (uint256_deserialize_be(in + CERT_SIZE, UINT256_SIZE, &blk->CurrentCertHash) != OP_SUCCESS) return OP_INVALID_INPUT;
-    if (uint256_deserialize_be(in + CERT_SIZE + UINT256_SIZE, UINT256_SIZE, &blk->prevHash) != OP_SUCCESS) return OP_INVALID_INPUT;
-    if (uint512_deserialize_be(in + CERT_SIZE + 2 * UINT256_SIZE, UINT512_SIZE, &blk->SignedByVerifier) != OP_SUCCESS) return OP_INVALID_INPUT;
-    deserialize_u64_be(in + CERT_SIZE + 2 * UINT256_SIZE + UINT512_SIZE, &blk->height, sizeof(uint64_t));
-    deserialize_u64_be(in + CERT_SIZE + 2 * UINT256_SIZE + UINT512_SIZE + UINT64_SIZE, &blk->timestamp, sizeof(uint64_t));
-    deserialize_u8_def(in + CERT_SIZE + 2 * UINT256_SIZE + UINT512_SIZE + 2 * UINT64_SIZE, &blk->tier, sizeof(uint8_t));
-    memcpy(blk->reserved,
-           in + CERT_SIZE + 2 * UINT256_SIZE + UINT512_SIZE + 2 * UINT64_SIZE + 1,
-           sizeof(blk->reserved));
-    if (minipowresult_deserialize(in + BLOCK_SIZE, MINI_POW_RESULT_SERIALIZED_SIZE, &blk->miniPowResult) != OP_SUCCESS) return OP_INVALID_INPUT;
-    if (tierpowresult_deserialize(in + BLOCK_SIZE + MINI_POW_RESULT_SERIALIZED_SIZE, TIER_POW_RESULT_SERIALIZED_SIZE, &blk->tierPoWResult) != OP_SUCCESS) return OP_INVALID_INPUT;
-    return OP_SUCCESS;
-}
 
 #endif // BLOCK_H

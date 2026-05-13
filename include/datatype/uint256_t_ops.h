@@ -8,9 +8,9 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stddef.h>
-#include "util/To_BO_BE_Pimitives.h"
-#include "util/To_BO_Def_Primitives.h"
-#include "datatype/OpStatus.h"
+#include "util/NetworkSerialization.h"
+#include "util/NetworkSerialization.h"
+#include "enums/OpStatus.h"
 /* Force aggressive inlining */
 #define U256_INLINE static inline __attribute__((always_inline))
 
@@ -90,34 +90,14 @@ U256_INLINE void uint256_copy(uint256 *dst,
 
 #define UINT256_SIZE 32  // 4 * 8 bytes
 
-U256_INLINE OpStatus_t uint256_serialize_be(const uint256 *u, uint8_t *out, size_t out_size)
-{
-    if (!u || !out) return OP_NULL_PTR;
-    if (out_size < UINT256_SIZE) return OP_BUF_TOO_SMALL;
-    for (int i = 0; i < 4; ++i) {
-        serialize_u64_be(u->w[i], out + (i * 8));
-    }
-    return OP_SUCCESS;
-}
+/* Moved to NetworkSerialization.h */
 
-U256_INLINE OpStatus_t uint256_deserialize_be(const uint8_t *in, size_t in_size, uint256 *u)
-{
-    if (!u || !in) return OP_NULL_PTR;
-    if (in_size < UINT256_SIZE) return OP_BUF_TOO_SMALL;
-    for (int i = 0; i < 4; ++i) {
-        deserialize_u64_be(in + (i * 8), &u->w[i], sizeof(uint64_t));
-    }
-    return OP_SUCCESS;
-}
 
-U256_INLINE OpStatus_t uint256_serialize_two_be(const uint256 *a, const uint256 *b, uint8_t *out, size_t out_size)
-{
-    if (!a || !b || !out) return OP_NULL_PTR;
-    if (out_size < (UINT256_SIZE * 2)) return OP_BUF_TOO_SMALL;
-    if (uint256_serialize_be(a, out, UINT256_SIZE) != OP_SUCCESS) return OP_INVALID_INPUT;
-    if (uint256_serialize_be(b, out + UINT256_SIZE, UINT256_SIZE) != OP_SUCCESS) return OP_INVALID_INPUT;
-    return OP_SUCCESS;
-}
+/* Moved to NetworkSerialization.h */
+
+
+/* Moved to NetworkSerialization.h */
+
 
 
 #endif

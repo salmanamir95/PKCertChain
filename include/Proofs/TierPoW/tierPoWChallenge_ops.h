@@ -6,12 +6,12 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
-#include "datatype/OpStatus.h"
+#include "enums/OpStatus.h"
 #include "datatype/uint256_t.h"
 #include "datatype/uint256_t.h"
 #include "util/SignUtils.h"
-#include "util/To_BO_Def_Primitives.h"
-#include "util/Size_Offsets.h"
+#include "util/NetworkSerialization.h"
+#include "Global_Size_Offsets.h"
 
 #define TIER_POW_CHALLENGE_INLINE static inline __attribute__((always_inline))
 
@@ -77,32 +77,10 @@ TIER_POW_CHALLENGE_INLINE void tier_pow_challenge_copy(tier_pow_challenge_t *dst
     memset(dst->reserved, 0, sizeof(dst->reserved));
 }
 
-TIER_POW_CHALLENGE_INLINE OpStatus_t tier_pow_challenge_serialize(const tier_pow_challenge_t *pow,
-                                                                  uint8_t *out,
-                                                                  size_t out_size)
-{
-    if (!pow || !out) return OP_NULL_PTR;
-    if (out_size < TIER_POW_CHALLENGE_SERIALIZED_SIZE) return OP_BUF_TOO_SMALL;
+/* Moved to NetworkSerialization.h */
 
-    if (uint256_serialize_be(&pow->challenge, out, UINT256_SIZE) != OP_SUCCESS) return OP_INVALID_INPUT;
-    serialize_u8(pow->complexity, out + UINT256_SIZE);
-    serialize_u64_be(pow->challenge_id, out + UINT256_SIZE + 1);
-    memcpy(out + UINT256_SIZE + 1 + UINT64_SIZE, pow->reserved, sizeof(pow->reserved));
-    return OP_SUCCESS;
-}
 
-TIER_POW_CHALLENGE_INLINE OpStatus_t tier_pow_challenge_deserialize(const uint8_t *in,
-                                                                    size_t in_size,
-                                                                    tier_pow_challenge_t *pow)
-{
-    if (!pow || !in) return OP_NULL_PTR;
-    if (in_size < TIER_POW_CHALLENGE_SERIALIZED_SIZE) return OP_BUF_TOO_SMALL;
+/* Moved to NetworkSerialization.h */
 
-    if (uint256_deserialize_be(in, UINT256_SIZE, &pow->challenge) != OP_SUCCESS) return OP_INVALID_INPUT;
-    pow->complexity = in[UINT256_SIZE];
-    deserialize_u64_be(in + UINT256_SIZE + 1, &pow->challenge_id, sizeof(uint64_t));
-    memcpy(pow->reserved, in + UINT256_SIZE + 1 + UINT64_SIZE, sizeof(pow->reserved));
-    return OP_SUCCESS;
-}
 
 #endif // TIER_POW_CHALLENGE_H

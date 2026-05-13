@@ -2,10 +2,10 @@
 #define MINI_POW_CLASSIFY_H
 
 #include "pkcertchain_config.h"
-#include "util/Size_Offsets.h"
+#include "Global_Size_Offsets.h"
 
 #include <stdint.h>
-#include "blockchain/Tier.h"
+#include "enums/Tier.h"
 
 
 static inline void mini_pow_select_row_col(uint64_t challenge_id, uint16_t *row, uint16_t *col)
