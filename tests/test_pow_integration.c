@@ -4,7 +4,7 @@
 #include <time.h>
 
 #include "blockchain/pkcertchain_ops.h"
-#include "protocol/proofs/mini_pow/mini_pow_Result_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_result.h"
 #include "Proofs/powManager.h"
 
 int main() {

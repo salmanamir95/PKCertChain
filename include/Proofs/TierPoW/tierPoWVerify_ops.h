@@ -8,10 +8,10 @@
 #include <stdlib.h>
 #define TIER_POW_VERIFY_INLINE static inline __attribute__((always_inline))
 
-#include "shared/proofs/tier_pow/tierPoWChallenge.h"
-#include "shared/proofs/tier_pow/tierPoWSolve.h"
-#include "shared/net/NetworkSerialization.h"
-#include "shared/core/enums/OpStatus.h"
+#include "Proofs/TierPoW/tierPoWChallenge_ops.h"
+#include "Proofs/TierPoW/tierPoWSolve_ops.h"
+#include "net/NetworkSerialization.h"
+#include "core/enums/OpStatus.h"
 
 TIER_POW_VERIFY_INLINE bool isValidTierChallenge(const tier_pow_challenge_t* pow,
                                                  const tier_pow_solve_t* solve)

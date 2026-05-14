@@ -2,10 +2,10 @@
 #define MINI_POW_CLASSIFY_H
 
 
-#include "shared/core/Global_Size_Offsets.h"
+#include "core/Global_Size_Offsets.h"
 
 #include <stdint.h>
-#include "shared/core/enums/Tier.h"
+#include "core/enums/Tier.h"
 
 
 static inline void mini_pow_select_row_col(uint64_t challenge_id, uint16_t *row, uint16_t *col)

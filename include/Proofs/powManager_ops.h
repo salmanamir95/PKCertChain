@@ -10,11 +10,11 @@
 
 #include "blockchain/block.h"
 #include "blockchain/pkcertchain_ops.h"
-#include "shared/proofs/tier_pow/tierPoWChallenge.h"
-#include "shared/proofs/tier_pow/tierPoWSolve.h"
-#include "shared/proofs/tier_pow/tierPoWVerify.h"
-#include "shared/proofs/tier_pow/tierPoWResult.h"
-#include "shared/core/enums/OpStatus.h"
+#include "Proofs/TierPoW/tierPoWChallenge_ops.h"
+#include "Proofs/TierPoW/tierPoWSolve_ops.h"
+#include "Proofs/TierPoW/tierPoWVerify_ops.h"
+#include "Proofs/TierPoW/tierPoWResult_ops.h"
+#include "core/enums/OpStatus.h"
 
 // typedef struct {
 //     PKCertChain *chain;

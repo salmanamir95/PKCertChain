@@ -4,7 +4,7 @@
 
 
 #include <stdint.h>
-#include "shared/proofs/tier_pow/tierPoWChallenge.h"
+#include "Proofs/TierPoW/tierPoWChallenge_ops.h"
 
 // typedef struct __attribute__((aligned(4))) {
 //     tier_pow_challenge_t challenge;

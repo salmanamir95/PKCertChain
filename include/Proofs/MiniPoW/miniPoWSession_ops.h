@@ -3,7 +3,7 @@
 
 
 #include <stdint.h>
-#include "shared/protocol/proofs/mini_pow/mini_pow_challenge_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_challenge_t.h"
 
 // typedef struct __attribute__((aligned(4))) {
 //     mini_pow_challenge_t challenge;

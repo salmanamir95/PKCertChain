@@ -5,8 +5,8 @@
 #include "blockchain/pkcertchain_ops.h"
 #include "protocol/proofs/mini_pow/mini_pow_Manager_ops_t.h"
 #include "protocol/proofs/mini_pow/mini_pow_Solve_t.h"
-#include "protocol/proofs/mini_pow/mini_pow_ChallengeSendQueue_t.h"
-#include "protocol/proofs/mini_pow/mini_pow_Ack_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_challenge_queue_t.h"
+#include "protocol/proofs/mini_pow/MiniPoW_ACK.h"
 #include "system/utilities.h"
 #include "crypto/SeedUtil.h"
 

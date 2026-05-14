@@ -3,8 +3,8 @@
 #include <string.h>
 
 #include "Proofs/MiniPoW/miniPoWManager_ops.h"
-#include "protocol/proofs/mini_pow/mini_pow_ChallengeSendQueue_t.h"
-#include "protocol/proofs/mini_pow/mini_pow_ChallengeReceiveQueue_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_challenge_queue_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_challenge_receive_queue_t.h"
 #include "protocol/proofs/mini_pow/mini_pow_Solve_t.h"
 #include "protocol/proofs/mini_pow/mini_pow_Matrix_t.h"
 

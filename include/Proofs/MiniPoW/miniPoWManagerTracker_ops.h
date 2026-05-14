@@ -2,7 +2,7 @@
 #define MINI_POW_MANAGER_TRACKER_H
 
 #include <stdint.h>
-#include "shared/protocol/proofs/mini_pow/mini_pow_Tracker_t.h"
+#include "protocol/proofs/mini_pow/MiniPowTracker.h"
 
 // // Manager Tracker for a session
 // typedef struct {

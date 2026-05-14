@@ -2,16 +2,16 @@
 #define MINI_POW_MATRIX_H
 
 
-#include "shared/core/Global_Size_Offsets.h"
+#include "core/Global_Size_Offsets.h"
 
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-#include "shared/core/datatypes/uint256_t.h"
-#include "shared/core/enums/OpStatus.h"
-#include "shared/blockchain/certificate.h"
-#include "shared/crypto/SeedUtil.h"
-#include "shared/protocol/proofs/mini_pow/mini_pow_Classify_t.h"
+#include "core/datatypes/uint256_t.h"
+#include "core/enums/OpStatus.h"
+#include "protocol/blockchain/certificate.h"
+#include "crypto/SeedUtil.h"
+#include "Proofs/MiniPoW/miniPoWClassify_ops.h"
 
 #ifndef MINI_POW_MATRIX_INLINE
 #define MINI_POW_MATRIX_INLINE static inline __attribute__((always_inline))

@@ -6,9 +6,9 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "shared/protocol/proofs/mini_pow/mini_pow_Matrix.h"
-#include "shared/protocol/proofs/mini_pow/SolvedMatricPoW.h"
-#include "shared/core/enums/OpStatus.h"
+#include "protocol/proofs/mini_pow/mini_pow_Matrix.h"
+#include "protocol/proofs/mini_pow/SolvedMatricPoW.h"
+#include "core/enums/OpStatus.h"
 
 #ifndef MINI_POW_VERIFY_INLINE
 #define MINI_POW_VERIFY_INLINE static inline __attribute__((always_inline))

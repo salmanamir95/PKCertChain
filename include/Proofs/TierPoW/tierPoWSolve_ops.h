@@ -6,12 +6,12 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
-#include "shared/proofs/tier_pow/tierPoWChallenge.h"
-#include "shared/core/datatypes/uint256_t.h"
-#include "shared/crypto/SignUtils.h"
-#include "shared/net/NetworkSerialization.h"
-#include "shared/core/Global_Size_Offsets.h"
-#include "shared/core/enums/OpStatus.h"
+#include "Proofs/TierPoW/tierPoWChallenge_ops.h"
+#include "core/datatypes/uint256_t.h"
+#include "crypto/SignUtils.h"
+#include "net/NetworkSerialization.h"
+#include "core/Global_Size_Offsets.h"
+#include "core/enums/OpStatus.h"
 
 #define TIER_POW_SOLVE_INLINE static inline __attribute__((always_inline))
 

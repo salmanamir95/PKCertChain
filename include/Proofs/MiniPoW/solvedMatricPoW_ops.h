@@ -5,7 +5,7 @@
 #include "core/Global_Size_Offsets.h"
 #include <stdint.h>
 #include <string.h>
-#include "shared/protocol/proofs/mini_pow/mini_pow_Classify_t.h"
+#include "Proofs/MiniPoW/miniPoWClassify_ops.h"
 
 #ifndef SOLVED_MATRIC_POW_INLINE
 #define SOLVED_MATRIC_POW_INLINE static inline __attribute__((always_inline))

@@ -2,6 +2,8 @@
 #define MINI_POW_TRACKER_H
 
 
+#include "core/Global_Size_Offsets.h"
+#include "protocol/proofs/mini_pow/MiniPowTracker.h"
 #include <stdint.h>
 #include <string.h>
 #include <time.h>

@@ -4,7 +4,7 @@
 
 
 #include <stdbool.h>
-#include "shared/protocol/proofs/mini_pow/mini_pow_challenge_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_challenge_t.h"
 
 /*
  * MiniPoW Challenge Queue Entry

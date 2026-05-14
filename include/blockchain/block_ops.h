@@ -7,16 +7,16 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-#include "shared/core/datatypes/uint256_t.h"
-#include "shared/core/datatypes/uint512.h"
+#include "core/datatypes/uint256_t.h"
+#include "core/datatypes/uint512.h"
 #include "blockchain/certificate.h"
-#include "shared/core/enums/Tier.h"
-#include "shared/core/Global_Size_Offsets.h"
+#include "core/enums/Tier.h"
+#include "core/Global_Size_Offsets.h"
 #include "net/NetworkSerialization.h"
 #include "net/NetworkSerialization.h"
-#include "shared/core/enums/OpStatus.h"
-#include "shared/protocol/proofs/mini_pow/mini_pow_Result_t.h"
-#include "shared/protocol/proofs/TierPoW/tierPoWResult.h"
+#include "core/enums/OpStatus.h"
+#include "protocol/proofs/mini_pow/mini_pow_result.h"
+#include "protocol/proofs/TierPoW/tierPoWResult.h"
 
 #define BLOCK_INLINE static inline __attribute__((always_inline))
 #define BLOCK_SERIALIZED_SIZE (BLOCK_SIZE + MINI_POW_RESULT_SERIALIZED_SIZE + TIER_POW_RESULT_SERIALIZED_SIZE)

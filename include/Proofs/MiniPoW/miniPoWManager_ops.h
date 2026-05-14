@@ -1,13 +1,14 @@
+#include "Proofs/MiniPoW/miniPoWTracker_ops.h"
 #ifndef MINI_POW_MANAGER_H
 #define MINI_POW_MANAGER_H
 
 #include <stdio.h>
-#include "shared/protocol/proofs/mini_pow/mini_pow_challenge_t.h"
-#include "shared/proofs/mini_pow/miniPoWVerify_ops.h"
-#include "shared/proofs/mini_pow/miniPoWClassify_ops.h"
-#include "shared/protocol/proofs/mini_pow/mini_pow_Ack_t.h"
-#include "shared/protocol/proofs/mini_pow/mini_pow_ManagerTracker_t.h"
-#include "shared/protocol/proofs/mini_pow/mini_pow_Result_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_challenge_t.h"
+#include "Proofs/MiniPoW/miniPoWVerify_ops.h"
+#include "Proofs/MiniPoW/miniPoWClassify_ops.h"
+#include "protocol/proofs/mini_pow/MiniPoW_ACK.h"
+#include "protocol/proofs/mini_pow/MiniPoWManagerTracker.h"
+#include "protocol/proofs/mini_pow/mini_pow_result.h"
 
 static inline void minipow_manager_tracker_init(MiniPoWManagerTracker *mgr, uint32_t session_id) {
     if (!mgr) return;

@@ -6,12 +6,12 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "shared/core/enums/Tier.h"
-#include "shared/proofs/tier_pow/tierPoWChallenge.h"
-#include "shared/proofs/tier_pow/tierPoWSolve.h"
-#include "shared/net/NetworkSerialization.h"
-#include "shared/net/NetworkSerialization.h"
-#include "shared/core/enums/OpStatus.h"
+#include "core/enums/Tier.h"
+#include "Proofs/TierPoW/tierPoWChallenge_ops.h"
+#include "Proofs/TierPoW/tierPoWSolve_ops.h"
+#include "net/NetworkSerialization.h"
+#include "net/NetworkSerialization.h"
+#include "core/enums/OpStatus.h"
 
 // Total serialized size: 1 + 3 + 44 + 20 + 8 = 76 bytes
 // typedef struct __attribute__((aligned(4))) {

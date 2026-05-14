@@ -7,9 +7,9 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
-#include "shared/protocol/proofs/mini_pow/mini_pow_challenge_t.h"
-#include "shared/protocol/proofs/mini_pow/mini_pow_Classify_t.h"
-#include "shared/core/enums/OpStatus.h"
+#include "protocol/proofs/mini_pow/mini_pow_challenge_t.h"
+#include "Proofs/MiniPoW/miniPoWClassify_ops.h"
+#include "core/enums/OpStatus.h"
 
 #ifndef MINI_POW_SOLVE_INLINE
 #define MINI_POW_SOLVE_INLINE static inline __attribute__((always_inline))

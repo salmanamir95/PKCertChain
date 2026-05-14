@@ -8,9 +8,9 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "shared/protocol/proofs/mini_pow/mini_pow_challenge_t.h"
-#include "shared/protocol/proofs/mini_pow/mini_pow_ChallengeQueueEntry_t.h"
-#include "shared/core/enums/OpStatus.h"
+#include "protocol/proofs/mini_pow/mini_pow_challenge_t.h"
+#include "protocol/proofs/mini_pow/mini_pow_challenge_queue_entry_t.h"
+#include "core/enums/OpStatus.h"
 
 #ifndef MINI_POW_CHALLENGE_RECEIVE_QUEUE_MAX
 #define MINI_POW_CHALLENGE_RECEIVE_QUEUE_MAX 128
